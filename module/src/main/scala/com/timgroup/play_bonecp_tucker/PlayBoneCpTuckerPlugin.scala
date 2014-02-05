@@ -1,0 +1,3 @@
+package com.timgroup.play_bonecp_tucker
+
+object PlayBoneCpTuckerPlugin

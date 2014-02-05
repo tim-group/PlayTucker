@@ -1,0 +1,13 @@
+language: scala
+scala:
+  - 2.10.3
+script:
+  - "cd module"
+  - "sbt test"
+  - "cd .."
+  - "cd sample"
+  - "sbt test"
+jdk:
+  - oraclejdk7
+  - openjdk7
+  - openjdk6
