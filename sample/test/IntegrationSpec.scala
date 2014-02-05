@@ -15,13 +15,12 @@ class IntegrationSpec extends Specification {
       component.status must be (Status.INFO)
     }
 
+    "contains component for each datasource" in {
+      val result = routeAndCall(FakeRequest("GET", "/info/status")).get
 
-//    "contains component for each datasource" in {
-//      val result = routeAndCall(FakeRequest("GET", "/info/status")).get
-//
-//      val component = TuckerReader.componentFor(result)("BoneCp-default")
-//
-//      component.status must be (Status.OK)
-//    }
+      val component = TuckerReader.componentFor(result)("BoneCp-default")
+
+      component.status must be (Status.OK)
+    }
   }
 }

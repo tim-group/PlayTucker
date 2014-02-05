@@ -12,6 +12,7 @@ import play.api.mvc.Results.Status
 import akka.actor.ActorSystem
 import play.api.Play
 import com.timgroup.tucker.info.component.VersionComponent
+import com.timgroup.play_bonecp_tucker.PlayBoneCpTuckerPlugin
 
 class Info(healthComponents: Seq[Component]) extends Controller {
   val statusPage = new StatusPageGenerator("play-bonecp-tucker-sample", PlayVersionComponent)
@@ -38,7 +39,9 @@ class Info(healthComponents: Seq[Component]) extends Controller {
   }
 }
 
-object Info extends Info(Seq())
+
+object Info extends Info(PlayBoneCpTuckerPlugin.components) {
+}
 
 object PlayVersionComponent extends VersionComponent {
   val VERSION_PROPERTY = "timgroup.app.version"
