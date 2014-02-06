@@ -18,7 +18,7 @@ resolvers += "repo-public" at "http://repo.youdevise.com:8081/nexus/content/grou
 
 libraryDependencies ++= Seq(
   "com.typesafe" %% "play-plugins-util" % "2.0.2",
-  "org.slf4j" % "slf4j-api" % "[1.6.6]",
+  "org.slf4j" % "slf4j-api" % "[1.7.6]",
   // Test-only dependencies
   "org.mockito" % "mockito-core" % "1.9.0" % "test"
 )
