@@ -6,9 +6,10 @@ object PlayBoneCpTuckerBuild extends Build {
   val tuckerVersion = SettingKey[String]("tucker-version", "The version of Tucker used for building.")
 
   lazy val main = Project(
-    id        = "main",
+    id        = "play-bonecp-tucker",
     base      = file( "." )
-  )
+  ).settings(publishTo := Some("TIM Group Repo" at "http://repo.youdevise.com:8081/nexus/content/repositories/yd-release-candidates"))
+   .settings(credentials += Credentials(new File("/etc/sbt/credentials")))
 
   // NOTE (2013-11-14, Marc): Sometimes Scala libraries (such as 
   //   ScalaTest and Specs2) will have a latest published version 
