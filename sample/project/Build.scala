@@ -1,5 +1,6 @@
 import sbt._
-import PlayProject._
+import Keys._
+import play.Project._
 
 object ApplicationBuild extends Build {
   val appName = "play-bonecp-tucker-sample"
@@ -10,7 +11,7 @@ object ApplicationBuild extends Build {
   // Depend on the latest local code of the play module we're testing
   val module = RootProject(file("../module"))
 
-  val main = PlayProject(appName, appVersion, appDependencies)
+  val main = play.Project(appName, appVersion, appDependencies)
     .settings(net.virtualvoid.sbt.graph.Plugin.graphSettings: _*)
     .dependsOn(module)
 }
