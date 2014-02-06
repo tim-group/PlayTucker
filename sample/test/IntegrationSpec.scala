@@ -42,11 +42,17 @@ class IntegrationSpec extends Specification with PlayFakeApp {
       database_1.value must equalTo ("4 in use of 20 (max 50)")
     }
 
+    "be critical when less than 10 connections are available" in {
+      val used = useConnections("database_1", 41)
 
-//
-//    "show critical inUseConnectiosn=maxConnections" in {
-//
-//    }
+      val result = routeAndCall(FakeRequest("GET", "/info/status")).get
+
+      val database_1 = TuckerReader.componentFor(result)("BoneCp-database_1")
+
+      used.foreach(_.close())
+
+      database_1.status must be(Status.CRITICAL)
+    }
   }
 
   private def useConnections(datasourceName: String, leaveUsed: Int): List[Connection] = {
