@@ -19,11 +19,11 @@ class IntegrationSpec extends Specification with PlayFakeApp {
     "contains component for each datasource" in {
       val result = routeAndCall(FakeRequest("GET", "/info/status")).get
 
-      val defaultComponent = TuckerReader.componentFor(result)("BoneCp-default")
-      val specialComponent = TuckerReader.componentFor(result)("BoneCp-special")
+      val database_1 = TuckerReader.componentFor(result)("BoneCp-database_1")
+      val database_2 = TuckerReader.componentFor(result)("BoneCp-database_2")
 
-      defaultComponent.status must be (Status.OK)
-      specialComponent.status must be (Status.OK)
+      database_1.status must be (Status.OK)
+      database_2.status must be (Status.OK)
     }
   }
 }
