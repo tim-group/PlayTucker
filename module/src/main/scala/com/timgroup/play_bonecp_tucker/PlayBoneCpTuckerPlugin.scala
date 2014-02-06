@@ -1,6 +1,10 @@
 package com.timgroup.play_bonecp_tucker
 
 import com.jolbox.bonecp.{BoneCP, BoneCPDataSource}
+import com.timgroup.tucker.info.component.DatabaseConnectionComponent
+import com.timgroup.tucker.info.component.DatabaseConnectionComponent.ConnectionProvider
+import java.sql.Connection
+import javax.sql.DataSource
 
 object PlayBoneCpTuckerPlugin {
   def components = {
@@ -10,14 +14,21 @@ object PlayBoneCpTuckerPlugin {
 
     val boneCp = use[BoneCPPlugin]
 
-    boneCp.api.datasources.map {
+    boneCp.api.datasources.flatMap {
       case (datasource: BoneCPDataSource, datasourceName: String) =>  {
         val pool = getPoolViaReflection(datasource)
         enableStatisicsViaReflection(pool)
 
-        new DataSourceHealthComponent(datasourceName, pool.getConfig, pool.getStatistics)
+        Seq(new DataSourceHealthComponent(datasourceName, pool.getConfig, pool.getStatistics),
+            new DatabaseConnectionComponent("Connectivity-" + datasourceName,
+                                            "%s DB Connectivity (%s)".format(datasourceName, pool.getConfig.getJdbcUrl),
+                                            connectionProviderFrom(datasource)))
       }
     }
+  }
+
+  private def connectionProviderFrom(datasource: DataSource) = new ConnectionProvider {
+    def getConnection: Connection = datasource.getConnection
   }
 
   private def enableStatisicsViaReflection(pool: BoneCP): Unit = {

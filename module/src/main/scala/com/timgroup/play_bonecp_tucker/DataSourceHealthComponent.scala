@@ -4,7 +4,7 @@ import com.timgroup.tucker.info.{Status, Report, Component}
 import com.jolbox.bonecp.{BoneCPConfig, Statistics}
 
 class DataSourceHealthComponent(dataSourceName: String, config: BoneCPConfig, statistics: Statistics)
-  extends Component("BoneCp-" + dataSourceName, "%s DB Connection Pool (%s)".format(dataSourceName, config.getJdbcUrl)) {
+  extends Component("BoneCp-" + dataSourceName, "%s DB Connection Pool usage (%s)".format(dataSourceName, config.getJdbcUrl)) {
 
   override def getReport: Report = {
     val leasedConnections = statistics.getTotalLeased
