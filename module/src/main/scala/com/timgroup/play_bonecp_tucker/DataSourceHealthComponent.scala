@@ -7,11 +7,18 @@ class DataSourceHealthComponent(dataSourceName: String, config: BoneCPConfig, st
   extends Component("BoneCp-" + dataSourceName, "BoneCp-" + dataSourceName) {
 
   override def getReport: Report = {
-    val leasedConnections: Int = statistics.getTotalLeased
-    val totalConnections: Int = statistics.getTotalCreatedConnections
-    val maxConnections: Int = config.getMaxConnectionsPerPartition
+    val leasedConnections = statistics.getTotalLeased
+    val totalConnections = statistics.getTotalCreatedConnections
+    val maxConnections = config.getMaxConnectionsPerPartition * config.getPartitionCount
 
-    new Report(if (maxConnections - leasedConnections < 10) Status.CRITICAL else Status.OK,
-      "%s in use of %s (max %s)".format(leasedConnections, totalConnections, maxConnections))
+    val status = if (maxConnections - leasedConnections < 10) {
+      Status.CRITICAL
+    } else if (maxConnections - leasedConnections < 20) {
+      Status.WARNING
+    } else {
+      Status.OK
+    }
+
+    new Report(status, "%s in use of %s (max %s)".format(leasedConnections, totalConnections, maxConnections))
   }
 }
