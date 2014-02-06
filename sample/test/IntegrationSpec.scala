@@ -1,7 +1,11 @@
+import collection.immutable.IndexedSeq
 import com.timgroup.tucker.info.Status
 import helper.TuckerReader
+import java.sql.Connection
+import javax.sql.DataSource
 import org.specs2.mutable._
 
+import play.api.db.DB
 import play.api.test._
 import play.api.test.Helpers._
 import helper.PlayFakeApp
@@ -25,5 +29,32 @@ class IntegrationSpec extends Specification with PlayFakeApp {
       database_1.status must be (Status.OK)
       database_2.status must be (Status.OK)
     }
+
+    "component shows the number of connections used/crated/max" in {
+      val used = useConnections("database_1", 4)
+
+      val result = routeAndCall(FakeRequest("GET", "/info/status")).get
+
+      val database_1 = TuckerReader.componentFor(result)("BoneCp-database_1")
+
+      used.foreach(_.close())
+
+      database_1.value must equalTo ("4 in use of 20 (max 50)")
+    }
+
+
+//
+//    "show critical inUseConnectiosn=maxConnections" in {
+//
+//    }
+  }
+
+  private def useConnections(datasourceName: String, leaveUsed: Int): List[Connection] = {
+    import play.api.Play.current
+    val source = DB.getDataSource(datasourceName)
+
+    (1 to leaveUsed).map(x => {
+      source.getConnection
+    }).toList
   }
 }

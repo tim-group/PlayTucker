@@ -2,7 +2,7 @@ package com.timgroup.play_bonecp_tucker
 
 import com.timgroup.tucker.info.{Status, Report, Component}
 import com.typesafe.plugin._
-import com.jolbox.bonecp.BoneCPDataSource
+import com.jolbox.bonecp.{Statistics, BoneCP, BoneCPDataSource}
 
 object PlayBoneCpTuckerPlugin {
   def components = {
@@ -14,10 +14,32 @@ object PlayBoneCpTuckerPlugin {
 
     boneCp.api.datasources.map {
       case (datasource: BoneCPDataSource, datasourceName: String) =>  {
-        new Component("BoneCp-" + datasourceName, "BoneCp-" + datasourceName) {
-          override def getReport: Report = new Report(Status.OK, "no monitoring implemented yet")
-        }
+        val pool = getPoolViaReflection(datasource)
+        enableStatisicsViaReflection(pool)
+
+        new DataSourceHealthComponent(datasourceName, datasource, pool.getStatistics)
       }
     }
   }
+
+  private def enableStatisicsViaReflection(pool: BoneCP): Unit = {
+    val statisticsEnabledField = pool.getClass.getDeclaredField("statisticsEnabled")
+    statisticsEnabledField.setAccessible(true)
+    statisticsEnabledField.setBoolean(pool, true)
+  }
+
+  private def getPoolViaReflection(datasource: BoneCPDataSource) = {
+    val poolField = datasource.getClass.getDeclaredField("pool");
+    poolField.setAccessible(true)
+    poolField.get(datasource).asInstanceOf[BoneCP]
+  }
+}
+
+class DataSourceHealthComponent(dataSourceName: String, datasource: BoneCPDataSource, statistics: Statistics)
+  extends Component("BoneCp-" + dataSourceName, "BoneCp-" + dataSourceName) {
+
+  override def getReport: Report = new Report(Status.OK, "%s in use of %s (max %s)".format(
+    statistics.getTotalLeased,
+    statistics.getTotalCreatedConnections,
+    datasource.getMaxConnectionsPerPartition))
 }
