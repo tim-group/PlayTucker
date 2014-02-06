@@ -18,6 +18,6 @@ Add the components to Tucker
 
     import play.api.Play.current
     import com.typesafe.plugin.use
-	val boneCP = use[PlayBoneCpTuckerPlugin]
-    
-	boneCP.components.foreach(statusPage.addComponent)
+    val boneCP = use[PlayBoneCpTuckerPlugin]
+
+    boneCP.components.foreach(statusPage.addComponent)
