@@ -15,7 +15,7 @@ object PlayBoneCpTuckerPlugin {
     boneCp.api.datasources.map {
       case (datasource: BoneCPDataSource, datasourceName: String) =>  {
         new Component("BoneCp-" + datasourceName, "BoneCp-" + datasourceName) {
-          override def getReport: Report = new Report(Status.OK)
+          override def getReport: Report = new Report(Status.OK, "no monitoring implemented yet")
         }
       }
     }
