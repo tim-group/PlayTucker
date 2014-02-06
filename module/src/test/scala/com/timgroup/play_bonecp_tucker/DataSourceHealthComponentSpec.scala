@@ -6,6 +6,9 @@ import org.scalatest.mock.MockitoSugar
 import com.jolbox.bonecp.{Statistics, BoneCPConfig}
 import com.timgroup.tucker.info.Status
 import org.mockito.BDDMockito._
+import com.yammer.metrics.core.{Gauge, MetricName, MetricsRegistry}
+import com.yammer.metrics.Metrics
+import scala.collection.JavaConversions._
 
 class DataSourceHealthComponentSpec extends path.FunSpec with MockitoSugar with MustMatchers {
   describe("The datasource health") {
@@ -74,6 +77,15 @@ class DataSourceHealthComponentSpec extends path.FunSpec with MockitoSugar with 
       val component = new DataSourceHealthComponent("db", config, statistics)
 
       component.getReport.getStatus must be (Status.WARNING)
+    }
+
+    it("registers metrics for the datasource") {
+      val config = mock[BoneCPConfig]
+      val statistics = mock[Statistics]
+
+      new DataSourceHealthComponent("db", config, statistics)
+
+      Metrics.defaultRegistry().allMetrics.map(_._1.getName) must contain ("TotalFree")
     }
   }
 }
