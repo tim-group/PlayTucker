@@ -2,7 +2,7 @@ package com.timgroup.play_bonecp_tucker
 
 import com.timgroup.tucker.info.{Status, Report, Component}
 import com.typesafe.plugin._
-import com.jolbox.bonecp.{Statistics, BoneCP, BoneCPDataSource}
+import com.jolbox.bonecp.{BoneCPConfig, Statistics, BoneCP, BoneCPDataSource}
 
 object PlayBoneCpTuckerPlugin {
   def components = {
@@ -17,7 +17,7 @@ object PlayBoneCpTuckerPlugin {
         val pool = getPoolViaReflection(datasource)
         enableStatisicsViaReflection(pool)
 
-        new DataSourceHealthComponent(datasourceName, datasource, pool.getStatistics)
+        new DataSourceHealthComponent(datasourceName, pool.getConfig, pool.getStatistics)
       }
     }
   }
@@ -35,11 +35,11 @@ object PlayBoneCpTuckerPlugin {
   }
 }
 
-class DataSourceHealthComponent(dataSourceName: String, datasource: BoneCPDataSource, statistics: Statistics)
+class DataSourceHealthComponent(dataSourceName: String, config: BoneCPConfig, statistics: Statistics)
   extends Component("BoneCp-" + dataSourceName, "BoneCp-" + dataSourceName) {
 
   override def getReport: Report = new Report(Status.OK, "%s in use of %s (max %s)".format(
     statistics.getTotalLeased,
     statistics.getTotalCreatedConnections,
-    datasource.getMaxConnectionsPerPartition))
+    config.getMaxConnectionsPerPartition))
 }
