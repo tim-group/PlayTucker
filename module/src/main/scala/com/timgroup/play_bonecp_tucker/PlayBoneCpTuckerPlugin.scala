@@ -5,8 +5,18 @@ import com.timgroup.tucker.info.component.DatabaseConnectionComponent
 import com.timgroup.tucker.info.component.DatabaseConnectionComponent.ConnectionProvider
 import java.sql.Connection
 import javax.sql.DataSource
+import play.api.{Logger, Application, Plugin}
 
-object PlayBoneCpTuckerPlugin {
+class PlayBoneCpTuckerPlugin(application: Application) extends Plugin {
+
+  override def onStart() {
+    Logger.info("PlayBoneCpTuckerPlugin started")
+  }
+
+  override def onStop() {
+    Logger.info("PlayBoneCpTuckerPlugin stopped")
+  }
+
   def components = {
     import play.api.Play.current
     import com.typesafe.plugin.use
@@ -43,5 +53,3 @@ object PlayBoneCpTuckerPlugin {
     poolField.get(datasource).asInstanceOf[BoneCP]
   }
 }
-
-

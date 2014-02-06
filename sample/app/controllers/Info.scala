@@ -14,7 +14,9 @@ import play.api.Play
 import com.timgroup.tucker.info.component.VersionComponent
 import com.timgroup.play_bonecp_tucker.PlayBoneCpTuckerPlugin
 
-class Info(healthComponents: Seq[Component]) extends Controller {
+trait Info extends Controller {
+  def healthComponents(): Seq[Component]
+
   val statusPage = new StatusPageGenerator("play-bonecp-tucker-sample", PlayVersionComponent)
   healthComponents.foreach(statusPage.addComponent)
 
@@ -39,8 +41,14 @@ class Info(healthComponents: Seq[Component]) extends Controller {
   }
 }
 
+object Info extends Info {
+  def healthComponents() = {
+    import play.api.Play.current
+    import com.typesafe.plugin.use
 
-object Info extends Info(PlayBoneCpTuckerPlugin.components) {
+    val boneCp = use[PlayBoneCpTuckerPlugin]
+    boneCp.components
+  }
 }
 
 object PlayVersionComponent extends VersionComponent {
