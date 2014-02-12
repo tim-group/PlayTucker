@@ -27,4 +27,5 @@ class IntegrationSpec extends Specification with PlayFakeApp {
 
       component.status must be (Status.INFO)
     }
+  }
 }

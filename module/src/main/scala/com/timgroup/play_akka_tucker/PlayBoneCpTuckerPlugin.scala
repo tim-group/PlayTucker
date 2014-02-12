@@ -11,9 +11,21 @@ class PlayAkkaTuckerPlugin(application: Application) extends Plugin {
 
     val tucker = use[PlayTuckerPlugin]
 
-    components.foreach(tucker.addComponent)
+    getDispatcherNamesFromConfig
+      .map(ecName => new ExecutionContextStatusComponent(ecName))
+      .foreach(tucker.addComponent)
 
     Logger.info("PlayAkkaTuckerPlugin started")
+  }
+
+  private def getDispatcherNamesFromConfig(): Seq[String] = {
+    application
+      .configuration
+      .getConfig("play.akka.actor")
+      .map(s => s.subKeys)
+      .flatten
+      .filter(_.endsWith("dispatcher"))
+      .toSeq
   }
 
   override def onStop() {
