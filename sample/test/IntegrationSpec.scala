@@ -23,7 +23,7 @@ class IntegrationSpec extends Specification with PlayFakeApp {
     "contains a status component for the default Dispatcher" in {
       val result = routeAndCall(FakeRequest("GET", "/info/status")).get
 
-      val component = TuckerReader.componentFor(result)("Akka-default-dispatcher")
+      val component = TuckerReader.componentFor(result)("Akka-play.akka.actor.default-dispatcher")
 
       component.status must be (Status.INFO)
     }

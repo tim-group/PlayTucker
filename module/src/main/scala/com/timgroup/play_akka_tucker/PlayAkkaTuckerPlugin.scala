@@ -50,13 +50,16 @@ class PlayAkkaTuckerPlugin(application: Application) extends Plugin {
   }
 
   private def getDispatcherNamesFromConfig(): Seq[String] = {
+    val prefix = "play.akka.actor"
+
     application
       .configuration
-      .getConfig("play.akka.actor")
+      .getConfig(prefix)
       .map(s => s.subKeys)
       .flatten
       .filter(_.endsWith("dispatcher"))
       .toSeq
+      .map(name => prefix + "." + name)
   }
 
   override def onStop() {
