@@ -17,3 +17,8 @@ Add the dependency in project/Build.scala
 Add the plugin in conf/play.plugins
 
     1000:com.timgroup.play_akka_tucker.PlayAkkaTuckerPlugin
+
+Docs
+----
+
+* ForkJoinPool JavaDoc: http://gee.cs.oswego.edu/dl/jsr166/dist/jsr166ydocs/jsr166y/ForkJoinPool.html
