@@ -10,7 +10,7 @@ class ForkJoinPoolStatusComponent(val executionContextName: String, val forkJoin
   extends Component("Akka-" + executionContextName, "Execution Context %s Thread Pool Status".format(executionContextName)) {
 
   override def getReport: Report = {
-    new Report(Status.INFO, forkJoinPool.toString)
+    new Report(Status.INFO, forkJoinPool.toString.split('[').last.stripSuffix("]"))
   }
 
 }

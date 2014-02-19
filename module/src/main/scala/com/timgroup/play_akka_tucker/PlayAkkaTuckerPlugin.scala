@@ -3,9 +3,20 @@ package com.timgroup.play_akka_tucker
 import play.api.{Logger, Application, Plugin}
 import com.timgroup.play_tucker.PlayTuckerPlugin
 import play.api.libs.concurrent.Akka
-import akka.dispatch.{ExecutorServiceDelegate, Dispatcher}
+import akka.dispatch.{ExecutionContext, ExecutorServiceDelegate, Dispatcher}
 import akka.jsr166y.ForkJoinPool
 import com.timgroup.tucker.info.Component
+
+case class ExecutionContextIdentifier(val path: String) {
+  def name: String = {
+    path.split('.').last
+  }
+
+  def lookup: ExecutionContext = {
+    import play.api.Play.current
+    Akka.system.dispatchers.lookup(path)
+  }
+}
 
 class PlayAkkaTuckerPlugin(application: Application) extends Plugin {
 
@@ -15,24 +26,23 @@ class PlayAkkaTuckerPlugin(application: Application) extends Plugin {
 
     val tucker = use[PlayTuckerPlugin]
 
-    getDispatcherNamesFromConfig
+    getExecutionContextsFromConfig
       .flatMap(createComponent)
       .foreach(tucker.addComponent)
 
     Logger.info("PlayAkkaTuckerPlugin started")
   }
 
-  private def createComponent(executionContextName: String): Option[Component] = {
-    getPool(executionContextName).map {
-      pool => new ForkJoinPoolStatusComponent(executionContextName, pool)
+  private def createComponent(executionContextIdentifier: ExecutionContextIdentifier): Option[Component] = {
+    getPool(executionContextIdentifier).map {
+      pool => new ForkJoinPoolStatusComponent(executionContextIdentifier.name, pool)
     }
   }
 
-  private def getPool(executionContextName: String): Option[ForkJoinPool] = {
-    import play.api.Play.current
+  private def getPool(executionContextIdentifier: ExecutionContextIdentifier): Option[ForkJoinPool] = {
 
     try {
-      val executionContext = Akka.system.dispatchers.lookup(executionContextName)
+      val executionContext = executionContextIdentifier.lookup
       val dispatcher = executionContext.asInstanceOf[Dispatcher]
       val executorServiceField = dispatcher.getClass.getDeclaredField("executorService")
       executorServiceField.setAccessible(true)
@@ -42,14 +52,14 @@ class PlayAkkaTuckerPlugin(application: Application) extends Plugin {
       Some(forkJoinPool)
     } catch {
       case e: Exception => {
-        Logger.error("Error getting ForkJoinPool for EC %s: %s".format(executionContextName, e.getMessage))
+        Logger.error("Error getting ForkJoinPool for EC %s: %s".format(executionContextIdentifier.name, e.getMessage))
         e.printStackTrace()
         None
       }
     }
   }
 
-  private def getDispatcherNamesFromConfig(): Seq[String] = {
+  private def getExecutionContextsFromConfig(): Seq[ExecutionContextIdentifier] = {
     val prefix = "play.akka.actor"
 
     application
@@ -59,7 +69,7 @@ class PlayAkkaTuckerPlugin(application: Application) extends Plugin {
       .flatten
       .filter(_.endsWith("dispatcher"))
       .toSeq
-      .map(name => prefix + "." + name)
+      .map(name => ExecutionContextIdentifier(prefix + "." + name))
   }
 
   override def onStop() {
