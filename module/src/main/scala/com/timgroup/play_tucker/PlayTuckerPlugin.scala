@@ -9,7 +9,7 @@ import com.timgroup.tucker.info.Stoppable
 import com.timgroup.tucker.info.Health
 import com.timgroup.tucker.info.Report
 import play.api.mvc.{Controller, Action}
-import com.timgroup.tucker.info.component.VersionComponent
+import com.timgroup.tucker.info.component.{JvmVersionComponent, VersionComponent}
 import play.api.mvc.Results._
 import play.api.libs.concurrent.Akka
 import play.api.libs.concurrent.akkaToPlay
@@ -35,6 +35,7 @@ class PlayTuckerPlugin(application: Application, appInfo: AppInfo) extends Plugi
     val statusPage = new StatusPageGenerator(appName, new PlayVersionComponent(appInfo))
     val handler = new ApplicationInformationHandler(statusPage, Stoppable.ALWAYS_STOPPABLE, Health.ALWAYS_HEALTHY)
     tucker = Some(statusPage, handler)
+    addComponent(new JvmVersionComponent())
   }
 
   override def onStop() = {

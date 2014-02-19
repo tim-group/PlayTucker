@@ -23,5 +23,13 @@ class IntegrationSpec extends Specification with PlayFakeApp {
 
       content.attribute("id").get(0).text must_== ("local-app")
     }
+
+    "contains a component for the version of the JVM" in {
+      val result = routeAndCall(FakeRequest("GET", "/info/status")).get
+
+      val component = TuckerReader.componentFor(result)("jvmversion")
+
+      component.status must be (Status.INFO)
+    }
   }
 }
