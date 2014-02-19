@@ -42,7 +42,7 @@ class PlayAkkaTuckerPlugin(application: Application) extends Plugin {
       Some(forkJoinPool)
     } catch {
       case e: Exception => {
-        Logger.error(e.getMessage)
+        Logger.error("Error getting ForkJoinPool for EC %s: %s".format(executionContextName, e.getMessage))
         e.printStackTrace()
         None
       }
