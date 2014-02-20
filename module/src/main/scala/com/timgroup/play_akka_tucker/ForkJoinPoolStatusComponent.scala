@@ -1,13 +1,12 @@
 package com.timgroup.play_akka_tucker
 
-import com.timgroup.tucker.info.{Report, Component}
-import com.timgroup.tucker.info.Status
-import play.api.libs.concurrent.Akka
 import akka.dispatch.Dispatcher
 import akka.jsr166y.ForkJoinPool
-import com.yammer.metrics.core.{Gauge, MetricName}
 import akka.util.NonFatal
+import play.api.libs.concurrent.Akka
 import play.Logger
+import com.timgroup.tucker.info.{Component, Report, Status}
+import com.yammer.metrics.core.{Gauge, MetricName}
 import com.yammer.metrics.Metrics
 
 class ForkJoinPoolStatusComponent(val executionContextName: String, val forkJoinPool: ForkJoinPool)
