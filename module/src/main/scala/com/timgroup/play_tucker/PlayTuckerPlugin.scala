@@ -1,24 +1,24 @@
 package com.timgroup.play_tucker
 
-import play.api.Plugin
-import play.api.Application
+
 import com.timgroup.tucker.info.status.StatusPageGenerator
 import com.timgroup.tucker.info.ApplicationInformationHandler
 import com.timgroup.tucker.info.Component
 import com.timgroup.tucker.info.Stoppable
 import com.timgroup.tucker.info.Health
 import com.timgroup.tucker.info.Report
-import play.api.mvc.{Controller, Action}
 import com.timgroup.tucker.info.component.{JvmVersionComponent, VersionComponent}
-import play.api.mvc.Results._
+import play.api.mvc.{Action, Controller}
+import play.api.{Application, Plugin}
 import play.api.libs.concurrent.Akka
-import play.api.libs.concurrent.akkaToPlay
+import scala.concurrent.ExecutionContext
 
 class PlayVersionComponent(appInfo: AppInfo) extends VersionComponent {
   def getReport = new Report(com.timgroup.tucker.info.Status.INFO, appInfo.getVersion())
 }
 
 class PlayTuckerPlugin(application: Application, appInfo: AppInfo) extends Plugin {
+  import ExecutionContext.Implicits.global
 
   def this(application: Application) = {
     this(application, AppInfo)
@@ -42,23 +42,16 @@ class PlayTuckerPlugin(application: Application, appInfo: AppInfo) extends Plugi
     tucker = None
   }
 
-  def render(page: String) = Action {
-    Async {
-      implicit def actorSystem = Akka.system(application)
+  def render(page: String) = Action.async {
+    implicit def actorSystem = Akka.system(application)
 
-      val response = new PlayWebResponse()
-      tucker.foreach(_._2.handle("/%s".format(page), response))
-      response.stream.close() // called because Tucker's StatusPageWriter never calls this, though others do (bug in Tucker?)
-      response.promiseOfResult.asPromise
-    }
+    val response = new PlayWebResponse()
+    tucker.foreach(_._2.handle("/%s".format(page), response))
+    response.ensureClosed() // called because Tucker's StatusPageWriter never calls this, though others do (bug in Tucker?)
+    response.futureOfResult
   }
 }
 
 object Info extends Controller {
-  def render(page: String) = {
-    import play.api.Play.current
-    import com.typesafe.plugin.use
-    val playTucker = use[PlayTuckerPlugin]
-    playTucker.render(page)
-  }
+  def render(page: String) = play.api.Play.current.plugin[PlayTuckerPlugin].get.render(page)
 }

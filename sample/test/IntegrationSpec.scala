@@ -9,7 +9,7 @@ import helper.PlayFakeApp
 class IntegrationSpec extends Specification with PlayFakeApp {
   "Status page" should {
     "contains component for the app version" in {
-      val result = routeAndCall(FakeRequest("GET", "/info/status")).get
+      val result = route(FakeRequest("GET", "/info/status")).get
 
       val component = TuckerReader.componentFor(result)("version")
 
@@ -17,15 +17,15 @@ class IntegrationSpec extends Specification with PlayFakeApp {
     }
 
     "contains the application name" in {
-      val result = routeAndCall(FakeRequest("GET", "/info/status")).get
+      val result = route(FakeRequest("GET", "/info/status")).get
 
       val content = TuckerReader.contentAsXML(result)
 
-      content.attribute("id").get(0).text must_== ("local-app")
+      content.attribute("id").get(0).text must_== "local-app"
     }
 
     "contains a component for the version of the JVM" in {
-      val result = routeAndCall(FakeRequest("GET", "/info/status")).get
+      val result = route(FakeRequest("GET", "/info/status")).get
 
       val component = TuckerReader.componentFor(result)("jvmversion")
 
