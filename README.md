@@ -3,7 +3,12 @@ Play Tucker
 
 Tucker for Play applications
 
-Installation
+
+
+Installation (for Play 2.1)
+
+-- For Play 2.2.x use the play22x branch
+
 ------------
 
 Add the dependency in project/Build.scala
