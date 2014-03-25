@@ -1,21 +1,17 @@
 package com.timgroup.play_tucker
 
-
 import com.timgroup.tucker.info.status.StatusPageGenerator
 import com.timgroup.tucker.info.ApplicationInformationHandler
 import com.timgroup.tucker.info.Component
 import com.timgroup.tucker.info.Stoppable
 import com.timgroup.tucker.info.Health
-import com.timgroup.tucker.info.Report
-import com.timgroup.tucker.info.component.{JvmVersionComponent, VersionComponent}
+import com.timgroup.tucker.info.component.{JvmVersionComponent}
 import play.api.mvc.{Action, Controller}
 import play.api.{Application, Plugin}
 import play.api.libs.concurrent.Akka
 import scala.concurrent.ExecutionContext
-
-class PlayVersionComponent(appInfo: AppInfo) extends VersionComponent {
-  def getReport = new Report(com.timgroup.tucker.info.Status.INFO, appInfo.getVersion())
-}
+import com.timgroup.play_tucker.lib.PlayWebResponse
+import com.timgroup.play_tucker.components.PlayVersionComponent
 
 class PlayTuckerPlugin(application: Application, appInfo: AppInfo) extends Plugin {
   import ExecutionContext.Implicits.global
@@ -33,9 +29,11 @@ class PlayTuckerPlugin(application: Application, appInfo: AppInfo) extends Plugi
   override def onStart() = {
     val appName = appInfo.getName()
     val statusPage = new StatusPageGenerator(appName, new PlayVersionComponent(appInfo))
+
     val handler = new ApplicationInformationHandler(statusPage, Stoppable.ALWAYS_STOPPABLE, Health.ALWAYS_HEALTHY)
     tucker = Some(statusPage, handler)
     addComponent(new JvmVersionComponent())
+
   }
 
   override def onStop() = {
