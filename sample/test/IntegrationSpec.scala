@@ -1,8 +1,6 @@
-import collection.immutable.IndexedSeq
 import com.timgroup.tucker.info.Status
 import helper.TuckerReader
 import java.sql.Connection
-import javax.sql.DataSource
 import org.specs2.mutable._
 
 import play.api.db.DB
@@ -13,7 +11,7 @@ import helper.PlayFakeApp
 class IntegrationSpec extends Specification with PlayFakeApp {
   "Status page" should {
     "contains component for the app version" in {
-      val result = routeAndCall(FakeRequest("GET", "/info/status")).get
+      val result = route(FakeRequest("GET", "/info/status")).get
 
       val component = TuckerReader.componentFor(result)("version")
 
@@ -21,7 +19,7 @@ class IntegrationSpec extends Specification with PlayFakeApp {
     }
 
     "contains pool usage component for each datasource" in {
-      val result = routeAndCall(FakeRequest("GET", "/info/status")).get
+      val result = route(FakeRequest("GET", "/info/status")).get
 
       val database_1 = TuckerReader.componentFor(result)("BoneCp-database_1")
       val database_2 = TuckerReader.componentFor(result)("BoneCp-database_2")
@@ -31,7 +29,7 @@ class IntegrationSpec extends Specification with PlayFakeApp {
     }
 
     "contains connectivity component for each datasource" in {
-      val result = routeAndCall(FakeRequest("GET", "/info/status")).get
+      val result = route(FakeRequest("GET", "/info/status")).get
 
       val database_1 = TuckerReader.componentFor(result)("Connectivity-database_1")
       val database_2 = TuckerReader.componentFor(result)("Connectivity-database_2")
@@ -43,7 +41,7 @@ class IntegrationSpec extends Specification with PlayFakeApp {
     "component shows the number of connections used/crated/max" in {
       val used = useConnections("database_1", 4)
 
-      val result = routeAndCall(FakeRequest("GET", "/info/status")).get
+      val result = route(FakeRequest("GET", "/info/status")).get
 
       val database_1 = TuckerReader.componentFor(result)("BoneCp-database_1")
 
@@ -55,7 +53,7 @@ class IntegrationSpec extends Specification with PlayFakeApp {
     "be critical when less than 10 connections are available" in {
       val used = useConnections("database_1", 41)
 
-      val result = routeAndCall(FakeRequest("GET", "/info/status")).get
+      val result = route(FakeRequest("GET", "/info/status")).get
 
       val database_1 = TuckerReader.componentFor(result)("BoneCp-database_1")
 

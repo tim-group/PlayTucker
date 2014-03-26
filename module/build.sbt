@@ -2,7 +2,7 @@ name := "play-bonecp-tucker"
 
 organization := "com.timgroup"
 
-version := "0.0." + Option(System.getProperty("BUILD_NUMBER", null)).getOrElse("0-SNAPSHOT")
+version := "2.2." + Option(System.getProperty("BUILD_NUMBER", null)).getOrElse("0-SNAPSHOT")
 
 scalaVersion := "2.10.3"
 

@@ -10,7 +10,7 @@ import com.yammer.metrics.core.{Gauge, MetricName, MetricsRegistry}
 import com.yammer.metrics.Metrics
 import scala.collection.JavaConversions._
 
-class DataSourceHealthComponentSpec extends path.FunSpec with MockitoSugar with MustMatchers {
+class DataSourceHealthComponentSpec extends path.FunSpec with MustMatchers {
   describe("The datasource health") {
     it("shows the number of leased, created and max connections") {
       val config = mock[BoneCPConfig]

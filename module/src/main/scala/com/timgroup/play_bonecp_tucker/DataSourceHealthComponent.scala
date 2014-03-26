@@ -1,17 +1,23 @@
 package com.timgroup.play_bonecp_tucker
 
-import com.timgroup.tucker.info.{Status, Report, Component}
+import com.timgroup.tucker.info.{Status, Component, Report}
 import com.jolbox.bonecp.{BoneCPConfig, Statistics}
-import com.yammer.metrics.core.{Gauge, MetricsRegistry, MetricName}
-import akka.util.NonFatal
+import com.codahale.metrics.{MetricFilter, MetricRegistry}
+import nl.grons.metrics.scala.MetricBuilder
 import play.Logger
-import com.yammer.metrics.Metrics
+import scala.util.control.NonFatal
+
+object TuckerMetrics {
+  val metricRegistry = new MetricRegistry
+  def clearMetricRegistry(): Unit = metricRegistry.removeMatching(MetricFilter.ALL)
+}
 
 class DataSourceHealthComponent(dataSourceName: String, config: BoneCPConfig, statistics: Statistics)
   extends Component("BoneCp-" + dataSourceName, "%s DB Connection Pool usage (%s)".format(dataSourceName, config.getJdbcUrl)) {
 
+  val metricBuilder = new MetricBuilder(this.getClass, TuckerMetrics.metricRegistry)
+
   try {
-    implicit val metricPrefix = new MetricName("database.bonecp", dataSourceName, "")
     gauge("CacheHitRatio", () => statistics.getCacheHitRatio)
     gauge("CacheHits", () => statistics.getCacheHits)
     gauge("CacheMiss", () => statistics.getCacheMiss)
@@ -32,10 +38,8 @@ class DataSourceHealthComponent(dataSourceName: String, config: BoneCPConfig, st
     case NonFatal(e) => Logger.error("Error registering metrics for CP datasource " + dataSourceName, e)
   }
 
-  private def gauge[T <: Any](name: String, f: () => T)(implicit top: MetricName) = {
-    Metrics.defaultRegistry().newGauge(new MetricName(top.getGroup, top.getType, name), new Gauge[T] {
-      def value() = f()
-    })
+  private def gauge[T <: Any](name: String, f: () => T) = {
+    metricBuilder.gauge("database.bonecp."+name,dataSourceName)(f)
   }
 
   override def getReport: Report = {
