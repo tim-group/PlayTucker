@@ -6,11 +6,9 @@ import org.scalatest.mock.MockitoSugar
 import com.jolbox.bonecp.{Statistics, BoneCPConfig}
 import com.timgroup.tucker.info.Status
 import org.mockito.BDDMockito._
-import com.yammer.metrics.core.{Gauge, MetricName, MetricsRegistry}
-import com.yammer.metrics.Metrics
 import scala.collection.JavaConversions._
 
-class DataSourceHealthComponentSpec extends path.FunSpec with MustMatchers {
+class DataSourceHealthComponentSpec extends path.FunSpec with MockitoSugar with MustMatchers {
   describe("The datasource health") {
     it("shows the number of leased, created and max connections") {
       val config = mock[BoneCPConfig]
@@ -85,7 +83,7 @@ class DataSourceHealthComponentSpec extends path.FunSpec with MustMatchers {
 
       new DataSourceHealthComponent("db", config, statistics)
 
-      Metrics.defaultRegistry().allMetrics.map(_._1.getName) must contain ("TotalFree")
+      com.timgroup.play_bonecp_tucker.TuckerMetrics.metricRegistry.getMetrics.map(_._1).toString.indexOf("TotalFree") > 0 must be(true)
     }
   }
 }
