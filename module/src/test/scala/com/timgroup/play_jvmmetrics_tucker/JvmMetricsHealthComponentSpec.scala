@@ -12,7 +12,7 @@ class JvmMetricsHealthComponentSpec extends path.FunSpec with MustMatchers with 
       new JvmMetricsHealthComponent()
     }
 
-    describe("shows status OK when enabled and all required properties are set") {
+    describe("shows OK when enabled and all required properties are set") {
       System.setProperty("graphite.enabled", "true")
       System.setProperty("graphite.host", "127.0.0.1")
       System.setProperty("graphite.port", "12345")

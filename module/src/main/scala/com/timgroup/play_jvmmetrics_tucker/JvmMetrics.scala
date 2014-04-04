@@ -6,6 +6,7 @@ import com.codahale.metrics.graphite.GraphiteReporter
 import java.net.InetSocketAddress
 import scala.util.{Failure, Success, Try}
 
+//TODO Brian/Ash: Consider switching to using Play's Configuration mechanism instead of System properties.
 object JvmMetrics {
 
   private var reporter: Option[GraphiteReporter] = None
@@ -17,8 +18,10 @@ object JvmMetrics {
     reset()
 
     val graphiteEnabled: Boolean = System.getProperty("graphite.enabled", "false").toBoolean
+
     if (graphiteEnabled) {
       val tryConfig = Try[GraphiteConfiguration] {
+
         val host: String = System.getProperty("graphite.host")
         val port: Int = System.getProperty("graphite.port").toInt
         val prefix: String = System.getProperty("graphite.prefix")
