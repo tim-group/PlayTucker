@@ -20,10 +20,26 @@ class IntegrationSpec extends Specification with PlayFakeApp {
       component.status must be (Status.INFO)
     }
 
-    "contains a status component for the default Dispatcher" in {
+    "contains a status component for the Akka default Dispatcher" in {
       val result = routeAndCall(FakeRequest("GET", "/info/status")).get
 
-      val component = TuckerReader.componentFor(result)("Akka-default-dispatcher")
+      val component = TuckerReader.componentFor(result)("Akka-Akka.akka_actor_default-dispatcher")
+
+      component.status must be (Status.INFO)
+    }
+
+    "contains a status component for an EC from the Promise System" in {
+      val result = routeAndCall(FakeRequest("GET", "/info/status")).get
+
+      val component = TuckerReader.componentFor(result)("Akka-Promise.akka_actor_default-dispatcher")
+
+      component.status must be (Status.INFO)
+    }
+
+    "contains a status component for an EC from the Invoker System" in {
+      val result = routeAndCall(FakeRequest("GET", "/info/status")).get
+
+      val component = TuckerReader.componentFor(result)("Akka-Invoker.akka_actor_default-dispatcher")
 
       component.status must be (Status.INFO)
     }

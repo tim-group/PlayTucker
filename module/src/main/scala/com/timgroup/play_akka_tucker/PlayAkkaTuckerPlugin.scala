@@ -2,13 +2,14 @@ package com.timgroup.play_akka_tucker
 
 import play.api.{Logger, Application, Plugin}
 import com.timgroup.play_tucker.PlayTuckerPlugin
-import play.api.libs.concurrent.Akka
+import play.api.libs.concurrent.{Promise, Akka}
 import akka.dispatch.{MessageDispatcherConfigurator, ExecutionContext, ExecutorServiceDelegate, Dispatcher}
 import akka.jsr166y.ForkJoinPool
 import com.timgroup.tucker.info.Component
 import akka.actor.ActorSystem
 import java.util.concurrent.ConcurrentHashMap
 import scala.collection.JavaConversions._
+import play.core.Invoker
 
 case class ExecutionContextIdentifier(val path: String, actorSystem: ActorSystem, actorSystemName: String) {
   def name: String = {
@@ -28,11 +29,22 @@ class PlayAkkaTuckerPlugin(application: Application) extends Plugin {
 
     val tucker = use[PlayTuckerPlugin]
 
-    getExecutionContextsFor(Akka.system, "Akka")
+    Promise.pure("Force Promise system to be initialized")
+
+    val executionContexts = getExecutionContextsFor(Akka.system, "Akka") ++
+                            getExecutionContextsFor(Invoker.system, "Invoker") ++
+                            getExecutionContextsFor(promiseSystem(), "Promise")
+    executionContexts
       .flatMap(createComponent)
       .foreach(tucker.addComponent)
 
     Logger.info("PlayAkkaTuckerPlugin started")
+  }
+
+  private def promiseSystem() = {
+    val system = Promise.getClass.getDeclaredField("system")
+    system.setAccessible(true)
+    system.get(Promise).asInstanceOf[ActorSystem]
   }
 
   private def createComponent(executionContextIdentifier: ExecutionContextIdentifier): Option[Component] = {
@@ -64,7 +76,7 @@ class PlayAkkaTuckerPlugin(application: Application) extends Plugin {
   private def getExecutionContextsFor(actorSystem: ActorSystem, actorSystemName: String): Seq[ExecutionContextIdentifier] = {
     val field = actorSystem.dispatchers.getClass.getDeclaredField("dispatcherConfigurators")
     field.setAccessible(true)
-    val dispatcherMap = field.get(actorSystem).asInstanceOf[ConcurrentHashMap[String, MessageDispatcherConfigurator]]
+    val dispatcherMap = field.get(actorSystem.dispatchers).asInstanceOf[ConcurrentHashMap[String, MessageDispatcherConfigurator]]
 
     dispatcherMap.keySet().toSeq.map(path => ExecutionContextIdentifier(path, actorSystem, actorSystemName))
   }
