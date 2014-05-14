@@ -10,9 +10,9 @@ import akka.actor.ActorSystem
 import java.util.concurrent.ConcurrentHashMap
 import scala.collection.JavaConversions._
 
-case class ExecutionContextIdentifier(val path: String, actorSystem: ActorSystem) {
+case class ExecutionContextIdentifier(val path: String, actorSystem: ActorSystem, actorSystemName: String) {
   def name: String = {
-    path.replace(".", "_")
+    actorSystemName + "." + path.replace(".", "_")
   }
 
   def lookup: ExecutionContext = {
@@ -28,7 +28,7 @@ class PlayAkkaTuckerPlugin(application: Application) extends Plugin {
 
     val tucker = use[PlayTuckerPlugin]
 
-    getExecutionContextsFor(Akka.system)
+    getExecutionContextsFor(Akka.system, "Akka")
       .flatMap(createComponent)
       .foreach(tucker.addComponent)
 
@@ -61,12 +61,12 @@ class PlayAkkaTuckerPlugin(application: Application) extends Plugin {
     }
   }
 
-  private def getExecutionContextsFor(actorSystem: ActorSystem): Seq[ExecutionContextIdentifier] = {
+  private def getExecutionContextsFor(actorSystem: ActorSystem, actorSystemName: String): Seq[ExecutionContextIdentifier] = {
     val field = actorSystem.dispatchers.getClass.getDeclaredField("dispatcherConfigurators")
     field.setAccessible(true)
     val dispatcherMap = field.get(actorSystem).asInstanceOf[ConcurrentHashMap[String, MessageDispatcherConfigurator]]
 
-    dispatcherMap.keySet().toSeq.map(path => ExecutionContextIdentifier(path, actorSystem))
+    dispatcherMap.keySet().toSeq.map(path => ExecutionContextIdentifier(path, actorSystem, actorSystemName))
   }
 
   override def onStop() {
