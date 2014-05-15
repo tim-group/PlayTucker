@@ -12,7 +12,7 @@ import scala.collection.JavaConversions._
 
 case class ExecutionContextIdentifier(val path: String, actorSystem: ActorSystem) {
   def name: String = {
-    path.replace(".", "_")
+    path.split('.').last
   }
 
   def lookup: ExecutionContext = {
