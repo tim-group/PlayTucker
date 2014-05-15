@@ -3,20 +3,18 @@ package com.timgroup.play_akka_tucker
 import play.api.{Logger, Application, Plugin}
 import com.timgroup.play_tucker.PlayTuckerPlugin
 import play.api.libs.concurrent.Akka
-import akka.dispatch.{MessageDispatcherConfigurator, ExecutionContext, ExecutorServiceDelegate, Dispatcher}
+import akka.dispatch.{ExecutionContext, ExecutorServiceDelegate, Dispatcher}
 import akka.jsr166y.ForkJoinPool
 import com.timgroup.tucker.info.Component
-import akka.actor.ActorSystem
-import java.util.concurrent.ConcurrentHashMap
-import scala.collection.JavaConversions._
 
-case class ExecutionContextIdentifier(val path: String, actorSystem: ActorSystem) {
+case class ExecutionContextIdentifier(val path: String) {
   def name: String = {
     path.split('.').last
   }
 
   def lookup: ExecutionContext = {
-    actorSystem.dispatchers.lookup(path)
+    import play.api.Play.current
+    Akka.system.dispatchers.lookup(path)
   }
 }
 
@@ -28,7 +26,7 @@ class PlayAkkaTuckerPlugin(application: Application) extends Plugin {
 
     val tucker = use[PlayTuckerPlugin]
 
-    getExecutionContextsFor(Akka.system)
+    getExecutionContextsFromConfig
       .flatMap(createComponent)
       .foreach(tucker.addComponent)
 
@@ -61,12 +59,17 @@ class PlayAkkaTuckerPlugin(application: Application) extends Plugin {
     }
   }
 
-  private def getExecutionContextsFor(actorSystem: ActorSystem): Seq[ExecutionContextIdentifier] = {
-    val field = actorSystem.dispatchers.getClass.getDeclaredField("dispatcherConfigurators")
-    field.setAccessible(true)
-    val dispatcherMap = field.get(actorSystem).asInstanceOf[ConcurrentHashMap[String, MessageDispatcherConfigurator]]
+  private def getExecutionContextsFromConfig(): Seq[ExecutionContextIdentifier] = {
+    val prefix = "play.akka.actor"
 
-    dispatcherMap.keySet().toSeq.map(path => ExecutionContextIdentifier(path, actorSystem))
+    application
+      .configuration
+      .getConfig(prefix)
+      .map(s => s.subKeys)
+      .flatten
+      .filter(_.endsWith("dispatcher"))
+      .toSeq
+      .map(name => ExecutionContextIdentifier(prefix + "." + name))
   }
 
   override def onStop() {
