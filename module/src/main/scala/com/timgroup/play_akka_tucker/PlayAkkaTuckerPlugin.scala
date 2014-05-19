@@ -3,7 +3,7 @@ package com.timgroup.play_akka_tucker
 import play.api.{Logger, Application, Plugin}
 import com.timgroup.play_tucker.PlayTuckerPlugin
 import play.api.libs.concurrent.Akka
-import akka.dispatch.{ExecutionContext, ExecutorServiceDelegate, Dispatcher}
+import akka.dispatch.{Dispatchers, ExecutionContext, ExecutorServiceDelegate, Dispatcher}
 import akka.jsr166y.ForkJoinPool
 import com.timgroup.tucker.info.Component
 
@@ -62,7 +62,7 @@ class PlayAkkaTuckerPlugin(application: Application) extends Plugin {
   private def getExecutionContextsFromConfig(): Seq[ExecutionContextIdentifier] = {
     val prefix = "play.akka.actor"
 
-    application
+    val configuredECs = application
       .configuration
       .getConfig(prefix)
       .map(s => s.subKeys)
@@ -70,6 +70,8 @@ class PlayAkkaTuckerPlugin(application: Application) extends Plugin {
       .filter(_.endsWith("dispatcher"))
       .toSeq
       .map(name => ExecutionContextIdentifier(prefix + "." + name))
+
+    configuredECs :+ ExecutionContextIdentifier(Dispatchers.DefaultDispatcherId)
   }
 
   override def onStop() {
