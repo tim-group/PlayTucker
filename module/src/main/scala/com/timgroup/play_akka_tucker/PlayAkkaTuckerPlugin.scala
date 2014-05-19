@@ -9,7 +9,7 @@ import com.timgroup.tucker.info.Component
 
 case class ExecutionContextIdentifier(val path: String) {
   def name: String = {
-    path.split('.').last
+    path.replace(".", "_")
   }
 
   def lookup: ExecutionContext = {
