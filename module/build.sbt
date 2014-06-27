@@ -2,11 +2,11 @@ name := "play-tucker"
 
 organization := "com.timgroup"
 
-version := "2.2." + Option(System.getProperty("BUILD_NUMBER", null)).getOrElse("0-SNAPSHOT")
+version := "2.3." + Option(System.getProperty("BUILD_NUMBER", null)).getOrElse("0-SNAPSHOT")
 
-scalaVersion := "2.10.3"
+scalaVersion := "2.10.4"
 
-playVersion := "2.2.1"
+playVersion := "2.3.1"
 
 tuckerVersion := "1.0.285"
 

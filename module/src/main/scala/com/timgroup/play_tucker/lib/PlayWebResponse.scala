@@ -5,12 +5,12 @@ import play.api.mvc.Results._
 import scala.concurrent.{Promise, Future, ExecutionContext}
 import play.api.http.HeaderNames
 import java.io.ByteArrayOutputStream
-import play.api.mvc.SimpleResult
+import play.api.mvc.Result
 
 class PlayWebResponse(implicit ec: ExecutionContext) extends WebResponse {
   private val stream = new ByteArrayOutputSteamThatSignalsCompletionOnClose()
-  private val promiseOfResult = Promise[SimpleResult]()
-  val futureOfResult: Future[SimpleResult] = promiseOfResult.future
+  private val promiseOfResult = Promise[Result]()
+  val futureOfResult: Future[Result] = promiseOfResult.future
 
   def ensureClosed(): Unit = {
     stream.close()

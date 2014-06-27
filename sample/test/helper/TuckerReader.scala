@@ -4,7 +4,7 @@ import com.timgroup.tucker.info.Status
 import scala.concurrent.Future
 import scala.concurrent.duration.Duration
 import java.util.concurrent.TimeUnit._
-import play.api.mvc.SimpleResult
+import play.api.mvc.Result
 import play.api.test.Helpers.contentAsString
 import akka.util.Timeout
 
@@ -13,7 +13,7 @@ object TuckerReader {
 
   case class Component(label: String, value: String, status: Status)
 
-  def componentFor(result: Future[SimpleResult])(id: String): Component = {
+  def componentFor(result: Future[Result])(id: String): Component = {
       val components = contentAsXML(result) \\ "component"
       val component = components.find { node => node.attribute("id").get.text == id }.get
       val value = (component \ "value").text
@@ -22,7 +22,7 @@ object TuckerReader {
       Component(label, value, status)
   }
 
-  def contentAsXML(result: Future[SimpleResult]) = {
+  def contentAsXML(result: Future[Result]) = {
     scala.xml.XML.loadString(contentAsString(result).replace("SYSTEM \"status-page.dtd\"", ""))
   }
 }
