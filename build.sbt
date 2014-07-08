@@ -8,6 +8,6 @@ resolvers += "Typesafe Releases" at "http://repo.typesafe.com/typesafe/releases/
 
 resolvers += "repo-public" at "http://repo.youdevise.com:8081/nexus/content/groups/public"
 
-publishTo := Some("TIM Group Repo" at "http://repo.youdevise.com:8081/nexus/content/repositories/yd-release-candidates")
+publishTo in ThisBuild := Some("TIM Group Repo" at "http://repo.youdevise.com:8081/nexus/content/repositories/yd-release-candidates")
 
 credentials += Credentials(new File("/etc/sbt/credentials"))
