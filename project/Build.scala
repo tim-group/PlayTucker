@@ -8,7 +8,7 @@ import play.PlayImport.PlayKeys._
 
 object ApplicationBuild extends Build {
   val playVersion = "2.3.1"
-  val tuckerVersion = "1.0.285"
+  val tuckerVersion = "1.0.318"
   val metricsVersion = "3.0.0"
 
   val appName = "play-tucker"
