@@ -6,7 +6,7 @@ import play.PlayImport._
 import play.Play.autoImport._
 import play.PlayImport.PlayKeys._
 
-object ApplicationBuild extends Build {
+object PlayTuckerBuild extends Build {
   val playVersion = "2.3.1"
   val tuckerVersion = "1.0.318"
   val metricsVersion = "3.0.0"
@@ -44,7 +44,6 @@ object ApplicationBuild extends Build {
                                     :+ "com.typesafe.play"  %% "play-jdbc"            % "2.2.1"
              )
     .dependsOn(playTuckerCore)
-
 
   val playTuckerJvmMetrics = (project in file("modules/play-tucker-jvmmetrics")).enablePlugins(PlayScala)
     .settings(compileOptions)
