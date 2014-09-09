@@ -1,3 +1,4 @@
 250:com.timgroup.play_tucker.PlayTuckerPlugin
+300:com.timgroup.play_jvmmetrics_tucker.PlayJvmMetricsTuckerPlugin
 500:com.timgroup.play_bonecp_tucker.PlayBoneCpTuckerPlugin
 
