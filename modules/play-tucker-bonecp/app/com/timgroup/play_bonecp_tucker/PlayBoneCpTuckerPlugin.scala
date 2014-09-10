@@ -1,38 +1,44 @@
 package com.timgroup.play_bonecp_tucker
 
+import java.sql.Connection
+import javax.sql.DataSource
+
 import com.jolbox.bonecp.{BoneCP, BoneCPDataSource}
 import com.timgroup.tucker.info.component.DatabaseConnectionComponent
 import com.timgroup.tucker.info.component.DatabaseConnectionComponent.ConnectionProvider
-import java.sql.Connection
-import javax.sql.DataSource
-import play.api.{Logger, Application, Plugin}
+import play.api.{Application, Logger, Plugin}
 
-class PlayBoneCpTuckerPlugin(application: Application) extends Plugin {
+object BoneCpMetrics extends Metrics
+
+class PlayBoneCpTuckerPlugin(app: Application) extends Plugin {
 
   override def onStart() {
     import com.timgroup.play_tucker.PlayTuckerPlugin
 
-    Logger.info("PlayBoneCpTuckerPlugin started")
     val tucker = play.api.Play.current.plugin[PlayTuckerPlugin].get
-
+    BoneCpMetrics.start(app.configuration)
     components.foreach(tucker.addComponent)
+    Logger.info("PlayBoneCpTuckerPlugin started")
   }
 
   override def onStop() {
+    BoneCpMetrics.stop()
     Logger.info("PlayBoneCpTuckerPlugin stopped")
   }
 
-  def components = {
+  private def components = {
     import play.api.db.BoneCPPlugin
 
-    val boneCp = play.api.Play.current.plugin[BoneCPPlugin].get
+    val boneCpPlugin = play.api.Play.current.plugin[BoneCPPlugin].get
 
-    boneCp.api.datasources.flatMap {
+    boneCpPlugin.api.datasources.flatMap {
       case (datasource: BoneCPDataSource, datasourceName: String) =>
         val pool: BoneCP = datasource.getPool
         enableStatisicsViaReflection(pool)
 
-        Seq(new DataSourceHealthComponent(datasourceName, pool.getConfig, pool.getStatistics),
+        val dataSourceHealthComponent = new DataSourceHealthComponent(datasourceName, pool.getConfig, pool.getStatistics)
+        BoneCpMetrics.registry.foreach(dataSourceHealthComponent.registerMetrics)
+        Seq(dataSourceHealthComponent,
             new DatabaseConnectionComponent("Connectivity-" + datasourceName,
                                             "%s DB Connectivity (%s)".format(datasourceName, pool.getConfig.getJdbcUrl),
                                             connectionProviderFrom(datasource)))

@@ -1,10 +1,12 @@
 package com.timgroup.play_bonecp_tucker
 
-import org.scalatest._
-import org.scalatest.mock.MockitoSugar
-import com.jolbox.bonecp.{Statistics, BoneCPConfig}
+import com.codahale.metrics.MetricRegistry
+import com.jolbox.bonecp.{BoneCPConfig, Statistics}
 import com.timgroup.tucker.info.Status
 import org.mockito.BDDMockito._
+import org.scalatest._
+import org.scalatest.mock.MockitoSugar
+
 import scala.collection.JavaConversions._
 
 class DataSourceHealthComponentSpec extends path.FunSpec with MockitoSugar with MustMatchers {
@@ -77,12 +79,12 @@ class DataSourceHealthComponentSpec extends path.FunSpec with MockitoSugar with 
     }
 
     it("registers metrics for the datasource") {
-      val config = mock[BoneCPConfig]
-      val statistics = mock[Statistics]
+      val component = new DataSourceHealthComponent("db", mock[BoneCPConfig], mock[Statistics])
+      val metricRegistry = new MetricRegistry
 
-      new DataSourceHealthComponent("db", config, statistics)
+      component.registerMetrics(metricRegistry)
 
-      com.timgroup.play_bonecp_tucker.TuckerMetrics.metricRegistry.getMetrics.map(_._1).toString().indexOf("TotalFree") > 0 must be(true)
+      metricRegistry.getMetrics.map(_._1).toString().indexOf("TotalFree") > 0 must be(true)
     }
   }
 }

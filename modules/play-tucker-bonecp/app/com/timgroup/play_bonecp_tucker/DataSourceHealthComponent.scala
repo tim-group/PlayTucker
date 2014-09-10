@@ -1,53 +1,50 @@
 package com.timgroup.play_bonecp_tucker
 
-import com.timgroup.tucker.info.{Status, Component, Report}
+import com.codahale.metrics.MetricRegistry
 import com.jolbox.bonecp.{BoneCPConfig, Statistics}
-import com.codahale.metrics.{MetricFilter, MetricRegistry}
+import com.timgroup.tucker.info.{Component, Report, Status}
 import nl.grons.metrics.scala.MetricBuilder
 import play.Logger
+
 import scala.util.control.NonFatal
 
-object TuckerMetrics {
-  val metricRegistry = new MetricRegistry
-  def clearMetricRegistry(): Unit = metricRegistry.removeMatching(MetricFilter.ALL)
-}
 
 class DataSourceHealthComponent(dataSourceName: String, config: BoneCPConfig, statistics: Statistics)
   extends Component("BoneCp-" + dataSourceName, "%s DB Connection Pool usage (%s)".format(dataSourceName, config.getJdbcUrl)) {
 
-  private val metricBuilderOwner = this.getClass
-  val metricBuilder = new MetricBuilder(metricBuilderOwner, TuckerMetrics.metricRegistry)
+  def registerMetrics(metricRegistry: MetricRegistry) {
+    val metricBuilderOwner = this.getClass
+    val metricBuilder = new MetricBuilder(metricBuilderOwner, metricRegistry)
 
-  try {
-    gauge("CacheHitRatio", () => statistics.getCacheHitRatio)
-    gauge("CacheHits", () => statistics.getCacheHits)
-    gauge("CacheMiss", () => statistics.getCacheMiss)
-    gauge("ConnectionsRequested", () => statistics.getConnectionsRequested)
-    gauge("ConnectionWaitTimeAvg", () => statistics.getConnectionWaitTimeAvg)
-    gauge("CumulativeConnectionWaitTime", () => statistics.getCumulativeConnectionWaitTime)
-    gauge("CumulativeStatementExecutionTime", () => statistics.getCumulativeStatementExecutionTime)
-    gauge("CumulativeStatementPrepareTime", () => statistics.getCumulativeStatementPrepareTime)
-    gauge("StatementExecuteTimeAvg", () => statistics.getStatementExecuteTimeAvg)
-    gauge("StatementPrepareTimeAvg", () => statistics.getStatementPrepareTimeAvg)
-    gauge("StatementsCached", () => statistics.getStatementsCached)
-    gauge("StatementsExecuted", () => statistics.getStatementsExecuted)
-    gauge("StatementsPrepared", () => statistics.getStatementsPrepared)
-    gauge("TotalCreatedConnections", () => statistics.getTotalCreatedConnections)
-    gauge("TotalFree", () => statistics.getTotalFree)
-    gauge("TotalLeased", () => statistics.getTotalLeased)
-  } catch {
-    case NonFatal(e) => Logger.error("Error registering metrics for CP datasource " + dataSourceName, e)
+    try {
+      gauge("CacheHitRatio", () => statistics.getCacheHitRatio)
+      gauge("CacheHits", () => statistics.getCacheHits)
+      gauge("CacheMiss", () => statistics.getCacheMiss)
+      gauge("ConnectionsRequested", () => statistics.getConnectionsRequested)
+      gauge("ConnectionWaitTimeAvg", () => statistics.getConnectionWaitTimeAvg)
+      gauge("CumulativeConnectionWaitTime", () => statistics.getCumulativeConnectionWaitTime)
+      gauge("CumulativeStatementExecutionTime", () => statistics.getCumulativeStatementExecutionTime)
+      gauge("CumulativeStatementPrepareTime", () => statistics.getCumulativeStatementPrepareTime)
+      gauge("StatementExecuteTimeAvg", () => statistics.getStatementExecuteTimeAvg)
+      gauge("StatementPrepareTimeAvg", () => statistics.getStatementPrepareTimeAvg)
+      gauge("StatementsCached", () => statistics.getStatementsCached)
+      gauge("StatementsExecuted", () => statistics.getStatementsExecuted)
+      gauge("StatementsPrepared", () => statistics.getStatementsPrepared)
+      gauge("TotalCreatedConnections", () => statistics.getTotalCreatedConnections)
+      gauge("TotalFree", () => statistics.getTotalFree)
+      gauge("TotalLeased", () => statistics.getTotalLeased)
+    } catch {
+      case NonFatal(e) => Logger.error("Error registering metrics for CP datasource " + dataSourceName, e)
+    }
+
+    def gauge[T <: Any](name: String, f: () => T, registry: MetricRegistry = metricRegistry) = {
+      val fullName = "database.bonecp." + name
+      val registryKey = MetricBuilder.metricName(metricBuilderOwner, Seq(fullName, dataSourceName))
+      registry.remove(registryKey)
+      metricBuilder.gauge(fullName, dataSourceName)(f)
+    }
   }
 
-  private def gauge[T <: Any](name: String, f: () => T) = {
-    val fullName = "database.bonecp." + name
-    val registryKey = metricName(fullName, dataSourceName)
-    //Remove Metric if Present (exceptions occur on duplicate registration)
-    TuckerMetrics.metricRegistry.remove(registryKey)
-    metricBuilder.gauge(fullName, dataSourceName)(f)
-  }
-
-  private[this] def metricName(name: String, scope: String = null): String = MetricBuilder.metricName(metricBuilderOwner, Seq(name, scope))
 
   override def getReport: Report = {
     val leasedConnections = statistics.getTotalLeased
