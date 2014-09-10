@@ -5,7 +5,7 @@ import java.util.concurrent.TimeUnit
 
 import com.codahale.metrics.graphite.{Graphite, GraphiteReporter}
 import com.codahale.metrics.{MetricFilter, MetricRegistry}
-import play.api.{Configuration, Application, Logger}
+import play.api.{Configuration, Logger}
 
 import scala.util.{Failure, Success, Try}
 
