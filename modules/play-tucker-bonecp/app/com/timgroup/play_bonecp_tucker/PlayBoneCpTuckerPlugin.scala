@@ -7,16 +7,16 @@ import com.jolbox.bonecp.{BoneCP, BoneCPDataSource}
 import com.timgroup.tucker.info.component.DatabaseConnectionComponent
 import com.timgroup.tucker.info.component.DatabaseConnectionComponent.ConnectionProvider
 import play.api.{Application, Logger, Plugin}
+import com.timgroup.play_tucker.PlayTuckerPlugin
 
 object BoneCpMetrics extends Metrics
 
 class PlayBoneCpTuckerPlugin(app: Application) extends Plugin {
 
   override def onStart() {
-    import com.timgroup.play_tucker.PlayTuckerPlugin
+    BoneCpMetrics.start(app.configuration)
 
     val tucker = play.api.Play.current.plugin[PlayTuckerPlugin].get
-    BoneCpMetrics.start(app.configuration)
     components.foreach(tucker.addComponent)
     Logger.info("PlayBoneCpTuckerPlugin started")
   }
