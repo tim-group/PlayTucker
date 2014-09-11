@@ -12,7 +12,6 @@ class PlayJvmMetricsTuckerPlugin(application: Application) extends Plugin {
 
     Logger.info("PlayJvmMetricsTuckerPlugin started")
     val tucker = play.api.Play.current.plugin[PlayTuckerPlugin].get
-
     tucker.addComponent(component)
   }
 
