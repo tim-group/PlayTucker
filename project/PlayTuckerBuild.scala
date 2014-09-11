@@ -9,7 +9,7 @@ import play.PlayImport.PlayKeys._
 object PlayTuckerBuild extends Build {
   val playVersion = "2.3.1"
   val tuckerVersion = "1.0.318"
-  val metricsVersion = "3.0.0"
+  val metricsVersion = "3.0.2"
 
   val appName = "play-tucker"
   val appVersion = "1.0-SNAPSHOT"
@@ -25,7 +25,7 @@ object PlayTuckerBuild extends Build {
     "org.scalatest"     %% "scalatest"    % "2.2.0" % "test"
   )
 
-  lazy val metrics = Seq("nl.grons"             %% "metrics-scala"    % "3.0.4",
+  lazy val metrics = Seq("nl.grons"             %% "metrics-scala"    % "3.2.1",
                          "com.codahale.metrics" %  "metrics-core"     % metricsVersion,
                          "com.codahale.metrics" %  "metrics-graphite" % metricsVersion,
                          "com.codahale.metrics" %  "metrics-jvm"      % metricsVersion,

@@ -23,7 +23,7 @@ class DataSourceHealthComponentSpec extends path.FunSpec with MockitoSugar with 
 
       component.registerMetrics(registry)
 
-      val keyName = component.getClass.getName + ".database.bonecp.TotalFree.db"
+      val keyName = "database.bonecp.db.TotalFree"
       registry.getGauges.get(keyName).getValue must be(42)
     }
   }
