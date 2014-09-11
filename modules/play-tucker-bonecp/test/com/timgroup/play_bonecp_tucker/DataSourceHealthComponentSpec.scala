@@ -1,6 +1,9 @@
 package com.timgroup.play_bonecp_tucker
 
-import com.codahale.metrics.MetricRegistry
+import java.util
+
+import com.codahale.metrics
+import com.codahale.metrics.{Gauge, MetricRegistry}
 import com.jolbox.bonecp.{BoneCPConfig, Statistics}
 import com.timgroup.tucker.info.Status
 import org.mockito.BDDMockito._
@@ -10,6 +13,21 @@ import org.scalatest.mock.MockitoSugar
 import scala.collection.JavaConversions._
 
 class DataSourceHealthComponentSpec extends path.FunSpec with MockitoSugar with MustMatchers {
+  describe("The metrics registry") {
+    it("is populated with working gauges") {
+      val statistics: Statistics = mock[Statistics]
+      given(statistics.getTotalFree).willReturn(42)
+
+      val component = new DataSourceHealthComponent("db", mock[BoneCPConfig], statistics)
+      val registry = new metrics.MetricRegistry
+
+      component.registerMetrics(registry)
+
+      val keyName = component.getClass.getName + ".database.bonecp.TotalFree.db"
+      registry.getGauges.get(keyName).getValue must be(42)
+    }
+  }
+
   describe("The datasource health") {
     it("shows the number of leased, created and max connections") {
       val config = mock[BoneCPConfig]
@@ -76,15 +94,6 @@ class DataSourceHealthComponentSpec extends path.FunSpec with MockitoSugar with 
       val component = new DataSourceHealthComponent("db", config, statistics)
 
       component.getReport.getStatus must be (Status.WARNING)
-    }
-
-    it("registers metrics for the datasource") {
-      val component = new DataSourceHealthComponent("db", mock[BoneCPConfig], mock[Statistics])
-      val metricRegistry = new MetricRegistry
-
-      component.registerMetrics(metricRegistry)
-
-      metricRegistry.getMetrics.map(_._1).toString().indexOf("TotalFree") > 0 must be(true)
     }
   }
 }

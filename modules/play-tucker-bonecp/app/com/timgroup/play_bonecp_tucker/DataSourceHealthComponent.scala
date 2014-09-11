@@ -41,7 +41,7 @@ class DataSourceHealthComponent(dataSourceName: String, config: BoneCPConfig, st
       val fullName = "database.bonecp." + name
       val registryKey = MetricBuilder.metricName(metricBuilderOwner, Seq(fullName, dataSourceName))
       registry.remove(registryKey)
-      metricBuilder.gauge(fullName, dataSourceName)(f)
+      metricBuilder.gauge(fullName, dataSourceName)(f())
     }
   }
 
