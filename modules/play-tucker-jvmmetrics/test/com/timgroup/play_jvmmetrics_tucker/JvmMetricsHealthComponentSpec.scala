@@ -1,42 +1,40 @@
 package com.timgroup.play_jvmmetrics_tucker
 
-import com.timgroup.tucker.info.Status
+import com.timgroup.tucker.info.{Report, Status}
+import com.typesafe.config.ConfigFactory
 import org.scalatest._
+import play.api.Configuration
 
 class JvmMetricsHealthComponentSpec extends path.FunSpec with MustMatchers with OneInstancePerTest {
   describe("The JvmMetrics health component:") {
 
-    def startAndGetHealthComponent() = {
-      JvmMetrics.start()
-      new JvmMetricsHealthComponent()
-    }
+    it("shows OK when enabled and all required properties are set") {
+      val component = startAndGetHealthComponent(Map("graphite.enabled" -> "true",
+                                                     "graphite.host" -> "127.0.0.1",
+                                                     "graphite.port" -> "12345",
+                                                     "graphite.prefix" -> "somePrefix"))
 
-    describe("shows OK when enabled and all required properties are set") {
-      System.setProperty("graphite.enabled", "true")
-      System.setProperty("graphite.host", "127.0.0.1")
-      System.setProperty("graphite.port", "12345")
-      System.setProperty("graphite.prefix", "somePrefix")
-
-      val component = startAndGetHealthComponent()
-
-      component.getReport.getStatus must be(Status.OK)
+      component.getReport must equal(new Report(Status.OK, "JvmMetrics Graphite Reporting is enabled"))
     }
 
     it("shows OK when the GraphiteReporter is not enabled") {
-      System.setProperty("graphite.enabled", "false")
+      val component = startAndGetHealthComponent(Map("graphite.enabled" -> "false"))
 
-      val component = startAndGetHealthComponent()
-
-      component.getReport.getStatus must be(Status.OK)
+      component.getReport must equal(new Report(Status.OK, "JvmMetrics Graphite Reporting is disabled"))
     }
 
     it("shows WARNING when the GraphiteReporter is enabled, but configuration is invalid") {
-      System.setProperty("graphite.enabled", "true")
-      System.setProperty("graphite.port", "You shall not parse!")
+      val component = startAndGetHealthComponent(Map("graphite.enabled" -> "true",
+                                                     "graphite.port" -> "INVALID"))
 
-      val component = startAndGetHealthComponent()
-
-      component.getReport.getStatus must be(Status.WARNING)
+      component.getReport must equal(new Report(Status.WARNING, "JvmMetrics Graphite Reporting should be enabled, but Graphite configuration failed"))
     }
+  }
+
+  def startAndGetHealthComponent(config: Map[String, String]) = {
+    import scala.collection.JavaConversions._
+    val playConfig = Configuration(ConfigFactory.parseMap(config))
+    JvmMetrics.start(playConfig)
+    new JvmMetricsHealthComponent()
   }
 }

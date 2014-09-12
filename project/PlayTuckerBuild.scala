@@ -25,33 +25,38 @@ object PlayTuckerBuild extends Build {
     "org.scalatest"     %% "scalatest"    % "2.2.0" % "test"
   )
 
-  lazy val metrics = Seq("nl.grons"             %% "metrics-scala"    % "3.2.1",
-                         "com.codahale.metrics" %  "metrics-core"     % metricsVersion,
-                         "com.codahale.metrics" %  "metrics-graphite" % metricsVersion,
-                         "com.codahale.metrics" %  "metrics-jvm"      % metricsVersion,
-                         "com.codahale.metrics" %  "metrics-servlet"  % metricsVersion,
-                         "com.codahale.metrics" %  "metrics-servlets" % metricsVersion)
-
   val playTuckerCore = (project in file("modules/play-tucker-core/")).enablePlugins(PlayScala)
     .settings(compileOptions)
     .settings(libraryDependencies ++= commonLibs)
 
+  val playMetricsGraphite = (project in file("modules/play-metrics-graphite/")).enablePlugins(PlayScala)
+    .settings(compileOptions)
+    .settings(libraryDependencies ++= commonLibs
+                                    :+ "nl.grons"             %% "metrics-scala"    % "3.2.1"
+                                    :+ "com.codahale.metrics" %  "metrics-core"     % metricsVersion
+                                    :+ "com.codahale.metrics" %  "metrics-graphite" % metricsVersion
+                                    :+ "com.codahale.metrics" %  "metrics-jvm"      % metricsVersion
+                                    :+ "com.codahale.metrics" %  "metrics-servlet"  % metricsVersion
+                                    :+ "com.codahale.metrics" %  "metrics-servlets" % metricsVersion)
+
   val playTuckerBoneCp = (project in file("modules/play-tucker-bonecp")).enablePlugins(PlayScala)
     .settings(compileOptions)
-    .settings(libraryDependencies ++= commonLibs ++ metrics
+    .settings(libraryDependencies ++= commonLibs
                                     :+ jdbc
                                     :+ "mysql"              %  "mysql-connector-java" % "5.1.27"
                                     :+ "com.typesafe.play"  %% "play-jdbc"            % "2.2.1"
              )
     .dependsOn(playTuckerCore)
+    .dependsOn(playMetricsGraphite)
 
   val playTuckerJvmMetrics = (project in file("modules/play-tucker-jvmmetrics")).enablePlugins(PlayScala)
     .settings(compileOptions)
-    .settings(libraryDependencies ++= commonLibs ++ metrics)
+    .settings(libraryDependencies ++= commonLibs)
     .dependsOn(playTuckerCore)
+    .dependsOn(playMetricsGraphite)
 
   val playTuckerSampleApp = (project in file(".")).enablePlugins(PlayScala)
     .settings(compileOptions)
-    .dependsOn(playTuckerCore, playTuckerBoneCp, playTuckerJvmMetrics)
-    .aggregate(playTuckerCore, playTuckerBoneCp, playTuckerJvmMetrics)
+    .dependsOn(playTuckerCore, playMetricsGraphite, playTuckerBoneCp, playTuckerJvmMetrics)
+    .aggregate(playTuckerCore, playMetricsGraphite, playTuckerBoneCp, playTuckerJvmMetrics)
 }

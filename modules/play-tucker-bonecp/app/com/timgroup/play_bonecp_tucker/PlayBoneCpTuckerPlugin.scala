@@ -8,6 +8,7 @@ import com.timgroup.tucker.info.component.DatabaseConnectionComponent
 import com.timgroup.tucker.info.component.DatabaseConnectionComponent.ConnectionProvider
 import play.api.{Application, Logger, Plugin}
 import com.timgroup.play_tucker.PlayTuckerPlugin
+import com.timgroup.play_metrics_graphite.Metrics
 
 object BoneCpMetrics extends Metrics
 

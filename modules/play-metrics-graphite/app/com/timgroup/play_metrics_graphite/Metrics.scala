@@ -1,4 +1,4 @@
-package com.timgroup.play_bonecp_tucker
+package com.timgroup.play_metrics_graphite
 
 import java.net.InetSocketAddress
 import java.util.concurrent.TimeUnit
@@ -11,10 +11,13 @@ import scala.util.{Failure, Success, Try}
 
 class Metrics {
   var registry: Option[MetricRegistry] = None
-  var graphiteReporter: Option[GraphiteReporter] = None
+
+  private var graphiteEnabled: Boolean = false
+  private var graphiteReporter: Option[GraphiteReporter] = None
 
   def start(playConfig: Configuration) {
-    val graphiteEnabled = playConfig.getBoolean("graphite.enabled").getOrElse(false)
+    stop()
+    graphiteEnabled = playConfig.getBoolean("graphite.enabled").getOrElse(false)
 
     if (graphiteEnabled) {
       val tryGraphiteConfig = Try[GraphiteConfiguration] {
@@ -42,9 +45,13 @@ class Metrics {
   def stop() {
     graphiteReporter.foreach(_.stop())
     registry.foreach(_.removeMatching(MetricFilter.ALL))
+
     graphiteReporter = None
     registry = None
+    graphiteEnabled = false
   }
+
+  def configurationFailed = graphiteEnabled && graphiteReporter.isEmpty
 }
 
 case class GraphiteConfiguration(host: String, port: Int, prefix: String)
