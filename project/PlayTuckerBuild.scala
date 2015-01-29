@@ -7,7 +7,7 @@ import play.Play.autoImport._
 import play.PlayImport.PlayKeys._
 
 object PlayTuckerBuild extends Build {
-  val playVersion = "2.3.1"
+  val playVersion = "2.3.7"
   val tuckerVersion = "1.0.318"
   val metricsVersion = "3.0.2"
 
