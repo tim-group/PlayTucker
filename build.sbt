@@ -11,3 +11,7 @@ resolvers += "repo-public" at "http://repo.youdevise.com:8081/nexus/content/grou
 publishTo in ThisBuild := Some("TIM Group Repo" at "http://repo.youdevise.com:8081/nexus/content/repositories/yd-release-candidates")
 
 credentials += Credentials(new File("/etc/sbt/credentials"))
+
+
+crossScalaVersions := Seq("2.10.4", "2.11.5")
+
