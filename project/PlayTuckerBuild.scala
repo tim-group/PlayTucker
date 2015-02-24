@@ -7,7 +7,7 @@ import play.Play.autoImport._
 import play.PlayImport.PlayKeys._
 
 object PlayTuckerBuild extends Build {
-  val playVersion = "2.3.7"
+  val playVersion = play.core.PlayVersion.current // see /project/play.sbt
   val tuckerVersion = "1.0.318"
   val metricsVersion = "3.0.2"
 
@@ -44,7 +44,6 @@ object PlayTuckerBuild extends Build {
     .settings(libraryDependencies ++= commonLibs
                                     :+ jdbc
                                     :+ "mysql"              %  "mysql-connector-java" % "5.1.27"
-                                    :+ "com.typesafe.play"  %% "play-jdbc"            % "2.2.1"
              )
     .dependsOn(playTuckerCore)
     .dependsOn(playMetricsGraphite)
