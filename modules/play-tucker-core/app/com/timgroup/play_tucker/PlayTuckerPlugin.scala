@@ -1,5 +1,6 @@
 package com.timgroup.play_tucker
 
+import com.timgroup.tucker.info.Health.State
 import com.timgroup.tucker.info.status.StatusPageGenerator
 import com.timgroup.tucker.info.ApplicationInformationHandler
 import com.timgroup.tucker.info.Component
@@ -20,17 +21,24 @@ class PlayTuckerPlugin(application: Application, appInfo: AppInfo) extends Plugi
     this(application, AppInfo)
   }
 
+  private var health = Health.ALWAYS_HEALTHY
   var tucker: Option[(StatusPageGenerator, ApplicationInformationHandler)] = None
 
   def addComponent(component: Component) = {
     tucker.foreach(_._1.addComponent(component))
   }
 
+  def setHealth(health: Health): Unit = {
+    this.health = health
+  }
+
   override def onStart() = {
     val appName = appInfo.getName()
     val statusPage = new StatusPageGenerator(appName, new PlayVersionComponent(appInfo))
 
-    val handler = new ApplicationInformationHandler(statusPage, Stoppable.ALWAYS_STOPPABLE, Health.ALWAYS_HEALTHY)
+    val handler = new ApplicationInformationHandler(statusPage, Stoppable.ALWAYS_STOPPABLE, new Health {
+      override def get(): State = health.get()
+    })
     tucker = Some((statusPage, handler))
     addComponent(new JvmVersionComponent())
 
