@@ -1,11 +1,13 @@
 package helper
 
-import play.api.test.FakeApplication
-import org.specs2.specification._
+import org.specs2.mutable.BeforeAfter
 import play.api.Play
+import play.api.test.FakeApplication
 
-trait PlayFakeApp extends BaseSpecification {
+trait PlayFakeApp extends BeforeAfter {
   val application = FakeApplication()
-  override def map(fs: => Fragments) = Step(Play.start(application)) ^ super.map(fs) ^ Step(Play.stop())
+  override def before = Play.start(application)
+  override def after = Play.stop(application)
 }
+
 

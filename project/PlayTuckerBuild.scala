@@ -54,6 +54,7 @@ object PlayTuckerBuild extends Build {
 
   val playTuckerSampleApp = (project in file(".")).enablePlugins(PlayScala)
     .settings(compileOptions)
+    .settings(libraryDependencies += specs2 % Test)
     .dependsOn(playTuckerCore, playMetricsGraphite, playTuckerBoneCp, playTuckerJvmMetrics)
     .aggregate(playTuckerCore, playMetricsGraphite, playTuckerBoneCp, playTuckerJvmMetrics)
 }

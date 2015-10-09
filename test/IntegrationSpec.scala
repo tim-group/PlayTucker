@@ -6,9 +6,9 @@ import play.api.test._
 import play.api.test.Helpers._
 import helper.PlayFakeApp
 
-class IntegrationSpec extends Specification with PlayFakeApp {
+class IntegrationSpec extends Specification {
   "Status page" should {
-    "contains component for the app version" in {
+    "contains component for the app version" in new PlayFakeApp {
       val result = route(FakeRequest("GET", "/info/status")).get
 
       val component = TuckerReader.componentFor(result)("version")
@@ -16,7 +16,7 @@ class IntegrationSpec extends Specification with PlayFakeApp {
       component.status must be (Status.INFO)
     }
 
-    "contains the application name" in {
+    "contains the application name" in new PlayFakeApp {
       val result = route(FakeRequest("GET", "/info/status")).get
 
       val content = TuckerReader.contentAsXML(result)
@@ -24,7 +24,7 @@ class IntegrationSpec extends Specification with PlayFakeApp {
       content.attribute("id").get(0).text must_== "local-app"
     }
 
-    "contains a component for the version of the JVM" in {
+    "contains a component for the version of the JVM" in new PlayFakeApp {
       val result = route(FakeRequest("GET", "/info/status")).get
 
       val component = TuckerReader.componentFor(result)("jvmversion")
