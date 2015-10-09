@@ -7,6 +7,7 @@ import com.timgroup.tucker.info.Component
 import com.timgroup.tucker.info.Stoppable
 import com.timgroup.tucker.info.Health
 import com.timgroup.tucker.info.component.JvmVersionComponent
+import javax.inject.Inject
 import play.api.mvc.{Action, Controller}
 import play.api.{Application, Plugin}
 import play.api.libs.concurrent.Akka
@@ -14,7 +15,7 @@ import scala.concurrent.ExecutionContext
 import com.timgroup.play_tucker.lib.PlayWebResponse
 import com.timgroup.play_tucker.components.PlayVersionComponent
 
-class PlayTuckerPlugin(application: Application, appInfo: AppInfo) extends Plugin {
+class PlayTuckerPlugin @Inject() (application: Application, appInfo: AppInfo) extends Plugin {
   import ExecutionContext.Implicits.global
 
   def this(application: Application) = {

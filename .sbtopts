@@ -1,0 +1,4 @@
+# Use TIM Group SBT Proxy Repositories
+# See http://www.scala-sbt.org/0.13/docs/Proxy-Repositories.html
+-Dsbt.repository.config=.sbt-repos-timgroup
+-Dsbt.override.build.repos=true

@@ -11,10 +11,8 @@ object PlayTuckerBuild extends Build {
   val tuckerVersion = "1.0.318"
   val metricsVersion = "3.0.2"
 
-  val appName = "play-tucker"
-  val appVersion = "1.0-SNAPSHOT"
-
-  lazy val compileOptions = scalacOptions ++= Seq("-deprecation", "-Ylog-classpath", "-unchecked", "-Xfatal-warnings", "-Xlint")
+  // NOTE (2015-10-09, msiegel): Disable `fatal-warnings` until we rewrite deprecated Plugins as Modules
+  lazy val compileOptions = scalacOptions ++= Seq("-deprecation", "-Ylog-classpath", "-unchecked", /* "-Xfatal-warnings", */ "-Xlint")
 
   lazy val commonLibs = Seq(
     "com.typesafe.play" %% "play"         % playVersion,

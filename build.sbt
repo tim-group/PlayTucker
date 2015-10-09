@@ -1,17 +1,12 @@
-scalaVersion in ThisBuild := "2.10.4"
+name in ThisBuild := "play-tucker"
+
+version in ThisBuild := "2.4." + Option(System.getProperty("BUILD_NUMBER", null)).getOrElse("0-SNAPSHOT")
 
 organization in ThisBuild := "com.timgroup"
 
-version in ThisBuild := "2.3." + Option(System.getProperty("BUILD_NUMBER", null)).getOrElse("0-SNAPSHOT")
-
-resolvers += "Typesafe Releases" at "http://repo.typesafe.com/typesafe/releases/"
-
-resolvers += "repo-public" at "http://repo.youdevise.com:8081/nexus/content/groups/public"
+scalaVersion in ThisBuild := "2.11.7"
 
 publishTo in ThisBuild := Some("TIM Group Repo" at "http://repo.youdevise.com:8081/nexus/content/repositories/yd-release-candidates")
 
-credentials += Credentials(new File("/etc/sbt/credentials"))
-
-
-crossScalaVersions := Seq("2.10.4", "2.11.5")
+credentials in ThisBuild += Credentials(new File("/etc/sbt/credentials"))
 

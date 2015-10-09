@@ -3,11 +3,12 @@ package com.timgroup.play_jvmmetrics_tucker
 import com.codahale.metrics.jvm.{ThreadStatesGaugeSet, MemoryUsageGaugeSet, GarbageCollectorMetricSet}
 import com.codahale.metrics.{MetricRegistry, jvm, JvmAttributeGaugeSet}
 import com.timgroup.play_metrics_graphite.Metrics
+import javax.inject.Inject
 import play.api.{Logger, Application, Plugin}
 import com.timgroup.play_tucker.PlayTuckerPlugin
 
 
-class PlayJvmMetricsTuckerPlugin(app: Application) extends Plugin {
+class PlayJvmMetricsTuckerPlugin @Inject() (app: Application) extends Plugin {
 
   override def onStart() {
     val tucker = play.api.Play.current.plugin[PlayTuckerPlugin].get

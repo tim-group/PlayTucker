@@ -1,0 +1,4 @@
+[repositories]
+local
+timgroup-nexus-ivy: http://repo.youdevise.com/nexus/content/groups/public_ivy/, [organization]/[module]/(scala_[scalaVersion]/)(sbt_[sbtVersion]/)[revision]/[type]s/[artifact](-[classifier]).[ext]
+timgroup-nexus: http://repo.youdevise.com/nexus/content/groups/public
