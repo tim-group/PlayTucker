@@ -2,4 +2,5 @@
 # This file defines all application routes (Higher priority routes first)
 # ~~~~
 
-GET        /info/:page        com.timgroup.play_tucker.Info.render(page)
+->  /info   tucker.Routes
+# GET        /info/:page        com.timgroup.play_tucker.Info.render(page, callback: Option[String])

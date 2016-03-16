@@ -31,5 +31,25 @@ class IntegrationSpec extends Specification with PlayFakeApp {
 
       component.status must be (Status.INFO)
     }
+
+    "responds to callback" in {
+      val result = route(FakeRequest("GET", "/info/status?callback=myCallback")).get
+
+      import play.api.test.Helpers.contentAsString
+
+      val content = contentAsString(result)
+
+      content must startWith ("myCallback")
+    }
+
+    "responds to callback with jvmversion field" in {
+      val result = route(FakeRequest("GET", "/info/status?callback=myCallback")).get
+
+      import play.api.test.Helpers.contentAsString
+
+      val content = contentAsString(result)
+
+      content must contain (""""id":"jvmversion"""")
+    }
   }
 }

@@ -1,0 +1,1 @@
+GET        /:page        com.timgroup.play_tucker.Info.render(page, callback: Option[String])

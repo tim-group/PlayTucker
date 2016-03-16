@@ -48,16 +48,23 @@ class PlayTuckerPlugin(application: Application, appInfo: AppInfo) extends Plugi
     tucker = None
   }
 
-  def render(page: String) = Action.async {
+  def render(page: String, maybeCallback: Option[String]) = Action.async {
     implicit def actorSystem = Akka.system(application)
 
     val response = new PlayWebResponse()
-    tucker.foreach(_._2.handle("/%s".format(page), response))
+    tucker.map(_._2).foreach { handler =>
+      maybeCallback match {
+        case None => handler.handle("/%s".format(page), response)
+        case Some(callback) => handler.handleJSONP("/%s".format(page), callback, response)
+      }
+    }
     response.ensureClosed() // called because Tucker's StatusPageWriter never calls this, though others do (bug in Tucker?)
     response.futureOfResult
   }
 }
 
 object Info extends Controller {
-  def render(page: String) = play.api.Play.current.plugin[PlayTuckerPlugin].get.render(page)
+  def render(page: String, maybeCallback: Option[String] = None) = {
+    play.api.Play.current.plugin[PlayTuckerPlugin].get.render(page, maybeCallback)
+  }
 }

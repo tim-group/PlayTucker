@@ -8,13 +8,13 @@ import play.PlayImport.PlayKeys._
 
 object PlayTuckerBuild extends Build {
   val playVersion = play.core.PlayVersion.current // see /project/play.sbt
-  val tuckerVersion = "1.0.318"
+  val tuckerVersion = "1.0.416"
   val metricsVersion = "3.0.2"
 
   val appName = "play-tucker"
   val appVersion = "1.0-SNAPSHOT"
 
-  lazy val compileOptions = scalacOptions ++= Seq("-deprecation", "-Ylog-classpath", "-unchecked", "-Xfatal-warnings", "-Xlint")
+  lazy val compileOptions = scalacOptions ++= Seq("-deprecation", "-Ylog-classpath", "-unchecked", "-Xfatal-warnings", "-Xlint", "-feature")
 
   lazy val commonLibs = Seq(
     "com.typesafe.play" %% "play"         % playVersion,
@@ -58,4 +58,5 @@ object PlayTuckerBuild extends Build {
     .settings(compileOptions)
     .dependsOn(playTuckerCore, playMetricsGraphite, playTuckerBoneCp, playTuckerJvmMetrics)
     .aggregate(playTuckerCore, playMetricsGraphite, playTuckerBoneCp, playTuckerJvmMetrics)
+    .settings(routesImport ++= Seq("scala.language.reflectiveCalls"))
 }
