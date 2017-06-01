@@ -3,14 +3,14 @@ package com.timgroup.play_bonecp_tucker
 import com.codahale.metrics.MetricRegistry
 import com.jolbox.bonecp.{BoneCPConfig, Statistics}
 import com.timgroup.tucker.info.{Component, Report, Status}
-import nl.grons.metrics.scala.{MetricName, MetricBuilder}
+import nl.grons.metrics.scala.{MetricBuilder, MetricName}
 import play.Logger
 
 import scala.util.control.NonFatal
 
 
 class DataSourceHealthComponent(dataSourceName: String, config: BoneCPConfig, statistics: Statistics)
-  extends Component("BoneCp-" + dataSourceName, "%s DB Connection Pool usage (%s)".format(dataSourceName, config.getJdbcUrl)) {
+  extends Component("BoneCp-" + dataSourceName, "%s DB Connection Pool usage".format(dataSourceName)) {
 
   def registerMetrics(metricRegistry: MetricRegistry) {
     val metricBuilder = new MetricBuilder(MetricName(s"database.bonecp.$dataSourceName"), metricRegistry)

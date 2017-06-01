@@ -4,11 +4,11 @@ import java.sql.Connection
 import javax.sql.DataSource
 
 import com.jolbox.bonecp.{BoneCP, BoneCPDataSource}
+import com.timgroup.play_metrics_graphite.Metrics
+import com.timgroup.play_tucker.PlayTuckerPlugin
 import com.timgroup.tucker.info.component.DatabaseConnectionComponent
 import com.timgroup.tucker.info.component.DatabaseConnectionComponent.ConnectionProvider
 import play.api.{Application, Logger, Plugin}
-import com.timgroup.play_tucker.PlayTuckerPlugin
-import com.timgroup.play_metrics_graphite.Metrics
 
 object BoneCpMetrics extends Metrics
 
@@ -41,7 +41,7 @@ class PlayBoneCpTuckerPlugin(app: Application) extends Plugin {
         BoneCpMetrics.registry.foreach(dataSourceHealthComponent.registerMetrics)
         Seq(dataSourceHealthComponent,
             new DatabaseConnectionComponent("Connectivity-" + datasourceName,
-                                            "%s DB Connectivity (%s)".format(datasourceName, pool.getConfig.getJdbcUrl),
+                                            "%s DB Connectivity".format(datasourceName),
                                             connectionProviderFrom(datasource)))
     }
   }
