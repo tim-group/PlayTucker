@@ -1,6 +1,6 @@
 import play.PlayImport.PlayKeys._
 
-scalaVersion in ThisBuild := "2.10.4"
+scalaVersion in ThisBuild := "2.11.5"
 
 organization in ThisBuild := "com.timgroup"
 
@@ -15,7 +15,7 @@ publishTo in ThisBuild := Some("TIM Group Repo" at "http://repo.youdevise.com:80
 credentials += Credentials(new File("/etc/sbt/credentials"))
 
 
-crossScalaVersions := Seq("2.10.4", "2.11.5")
+crossScalaVersions := Seq("2.11.5")
 
 val playVersion = play.core.PlayVersion.current // see /project/play.sbt
 val tuckerVersion = "1.0.1465"
