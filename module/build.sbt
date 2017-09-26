@@ -8,8 +8,6 @@ scalaVersion := "2.9.1"
 
 playVersion := "2.0.8"
 
-tuckerVersion := "1.0.276"
-
 crossScalaVersions := Seq("2.9.1", "2.9.2", "2.9.3")
 
 resolvers += "Typesafe Releases" at "http://repo.typesafe.com/typesafe/releases/"
@@ -27,4 +25,4 @@ libraryDependencies <++= (scalaVersion, playVersion) { CrossVersionDependencies.
 
 libraryDependencies <++= (scalaVersion) { CrossVersionDependencies.scalatest(_) }
 
-libraryDependencies <++= (tuckerVersion) { version => Seq("com.timgroup" % "Tucker" % version intransitive())  }
+libraryDependencies <++= (autobump) { version => Seq("com.timgroup" % "Tucker" % version intransitive())  }
