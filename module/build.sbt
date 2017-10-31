@@ -12,9 +12,9 @@ tuckerVersion := "1.0.1479"
 
 crossScalaVersions := Seq("2.9.1", "2.9.2", "2.9.3")
 
-resolvers += "Typesafe Releases" at "http://repo.typesafe.com/typesafe/releases/"
-
+resolvers += Resolver.url("TIMGroup Ivy", url("http://repo.youdevise.com/nexus/content/groups/public_ivy/"))(Resolver.ivyStylePatterns)
 resolvers += "repo-public" at "http://repo.youdevise.com:8081/nexus/content/groups/public"
+resolvers += "Typesafe Releases" at "http://repo.typesafe.com/typesafe/releases/"
 
 libraryDependencies ++= Seq(
   "com.typesafe" %% "play-plugins-util" % "2.0.2",
