@@ -11,8 +11,10 @@ import play.api.mvc.{Action, Controller}
 import play.api.{Application, Plugin}
 import play.api.libs.concurrent.Akka
 import scala.concurrent.ExecutionContext
+
 import com.timgroup.play_tucker.lib.PlayWebResponse
 import com.timgroup.play_tucker.components.PlayVersionComponent
+import com.timgroup.tucker.info.StartupTimer
 
 class PlayTuckerPlugin(application: Application, appInfo: AppInfo) extends Plugin {
   import ExecutionContext.Implicits.global
@@ -23,6 +25,7 @@ class PlayTuckerPlugin(application: Application, appInfo: AppInfo) extends Plugi
 
   private var health = Health.ALWAYS_HEALTHY
   var tucker: Option[(StatusPageGenerator, ApplicationInformationHandler)] = None
+  private var startupTimer = new StartupTimer(health)
 
   def addComponent(component: Component) = {
     tucker.foreach(_._1.addComponent(component))
@@ -41,11 +44,12 @@ class PlayTuckerPlugin(application: Application, appInfo: AppInfo) extends Plugi
     })
     tucker = Some((statusPage, handler))
     addComponent(new JvmVersionComponent())
-
+    startupTimer.start()
   }
 
   override def onStop() = {
     tucker = None
+    startupTimer.stop()
   }
 
   def render(page: String, maybeCallback: Option[String]) = Action.async {
