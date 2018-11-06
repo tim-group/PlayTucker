@@ -23,7 +23,9 @@ class PlayTuckerPlugin(application: Application, appInfo: AppInfo) extends Plugi
     this(application, AppInfo)
   }
 
-  private var health = Health.ALWAYS_HEALTHY
+  private var health = new Health {
+    override def get() = Health.State.ill
+  }
   var tucker: Option[(StatusPageGenerator, ApplicationInformationHandler)] = None
   private var startupTimer = new StartupTimer(health)
 
