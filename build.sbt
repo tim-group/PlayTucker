@@ -1,6 +1,6 @@
 import play.PlayImport.PlayKeys._
 
-scalaVersion in ThisBuild := "2.11.5"
+scalaVersion in ThisBuild := "2.11.12"
 
 organization in ThisBuild := "com.timgroup"
 
