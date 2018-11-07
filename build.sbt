@@ -19,7 +19,7 @@ crossScalaVersions := Seq("2.11.5")
 
 val playVersion = play.core.PlayVersion.current // see /project/play.sbt
 val tuckerVersion = "1.0.1511"
-val metricsVersion = "3.0.2"
+val metricsVersion = "3.2.3"
 
 val appName = "play-tucker"
 val appVersion = "1.0-SNAPSHOT"
@@ -42,11 +42,11 @@ val playTuckerCore = (project in file("modules/play-tucker-core/")).enablePlugin
 val playMetricsGraphite = (project in file("modules/play-metrics-graphite/")).enablePlugins(PlayScala)
   .settings(compileOptions)
   .settings(libraryDependencies ++= commonLibs
-                                  :+ "com.codahale.metrics" %  "metrics-core"     % metricsVersion
-                                  :+ "com.codahale.metrics" %  "metrics-graphite" % metricsVersion
-                                  :+ "com.codahale.metrics" %  "metrics-jvm"      % metricsVersion
-                                  :+ "com.codahale.metrics" %  "metrics-servlet"  % metricsVersion
-                                  :+ "com.codahale.metrics" %  "metrics-servlets" % metricsVersion)
+                                  :+ "io.dropwizard.metrics" %  "metrics-core"     % metricsVersion
+                                  :+ "io.dropwizard.metrics" %  "metrics-graphite" % metricsVersion
+                                  :+ "io.dropwizard.metrics" %  "metrics-jvm"      % metricsVersion
+                                  :+ "io.dropwizard.metrics" %  "metrics-servlet"  % metricsVersion
+                                  :+ "io.dropwizard.metrics" %  "metrics-servlets" % metricsVersion)
 
 val playTuckerBoneCp = (project in file("modules/play-tucker-bonecp")).enablePlugins(PlayScala)
   .settings(compileOptions)
