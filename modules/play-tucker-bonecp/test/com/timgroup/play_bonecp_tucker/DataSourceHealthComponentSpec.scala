@@ -1,14 +1,11 @@
 package com.timgroup.play_bonecp_tucker
 
-import java.util
-
 import com.codahale.metrics
-import com.codahale.metrics.{Gauge, MetricRegistry}
 import com.jolbox.bonecp.{BoneCPConfig, Statistics}
 import com.timgroup.tucker.info.Status
 import org.mockito.BDDMockito._
 import org.scalatest._
-import org.scalatest.mock.MockitoSugar
+import org.scalatest.mockito.MockitoSugar
 
 import scala.collection.JavaConversions._
 

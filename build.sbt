@@ -19,20 +19,20 @@ crossScalaVersions := Seq("2.11.5")
 
 val playVersion = play.core.PlayVersion.current // see /project/play.sbt
 val tuckerVersion = "1.0.1511"
-val metricsVersion = "3.2.3"
+val metricsVersion = "4.0.3"
 
 val appName = "play-tucker"
 val appVersion = "1.0-SNAPSHOT"
 
-lazy val compileOptions = scalacOptions ++= Seq("-deprecation", "-Ylog-classpath", "-unchecked", "-Xfatal-warnings", "-Xlint", "-feature")
+lazy val compileOptions = scalacOptions ++= Seq("-deprecation", "-Ylog-classpath", "-unchecked", "-Xfatal-warnings", "-Xlint:_,-missing-interpolator", "-feature")
 
 lazy val commonLibs = Seq(
   "com.typesafe.play" %% "play"         % playVersion,
   "com.timgroup"      %  "Tucker"       % tuckerVersion intransitive(),
   "org.slf4j"         %  "slf4j-api"    % "[1.7.6]",
-  "org.mockito"       %  "mockito-core" % "1.9.0" % "test",
-  "org.scalactic"     %% "scalactic"    % "2.2.0",
-  "org.scalatest"     %% "scalatest"    % "2.2.0" % "test"
+  "org.mockito"       %  "mockito-core" % "2.23.0" % "test",
+  "org.scalactic"     %% "scalactic"    % "3.0.5",
+  "org.scalatest"     %% "scalatest"    % "3.0.5" % "test"
 )
 
 val playTuckerCore = (project in file("modules/play-tucker-core/")).enablePlugins(PlayScala)
@@ -52,7 +52,7 @@ val playTuckerBoneCp = (project in file("modules/play-tucker-bonecp")).enablePlu
   .settings(compileOptions)
   .settings(libraryDependencies ++= commonLibs
                                   :+ jdbc
-                                  :+ "mysql"              %  "mysql-connector-java" % "5.1.27"
+                                  :+ "mysql"              %  "mysql-connector-java" % "8.0.13"
            )
   .dependsOn(playTuckerCore)
   .dependsOn(playMetricsGraphite)
