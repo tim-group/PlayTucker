@@ -1,13 +1,13 @@
 package com.timgroup.play_bonecp_tucker
 
 import com.codahale.metrics.{Gauge, MetricRegistry}
-import com.jolbox.bonecp.{BoneCPConfig, Statistics}
+import com.jolbox.bonecp.{BoneCPConfigMBean, StatisticsMBean}
 import com.timgroup.tucker.info.{Component, Report, Status}
 import play.Logger
 
 import scala.util.control.NonFatal
 
-class DataSourceHealthComponent(dataSourceName: String, config: BoneCPConfig, statistics: Statistics)
+class DataSourceHealthComponent(dataSourceName: String, config: BoneCPConfigMBean, statistics: StatisticsMBean)
   extends Component("BoneCp-" + dataSourceName, "%s DB Connection Pool usage".format(dataSourceName)) {
 
   def registerMetrics(metricRegistry: MetricRegistry) {
