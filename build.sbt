@@ -30,7 +30,7 @@ lazy val commonLibs = Seq(
   "com.typesafe.play" %% "play"         % playVersion,
   "com.timgroup"      %  "Tucker"       % tuckerVersion intransitive(),
   "org.slf4j"         %  "slf4j-api"    % "[1.7.6]",
-  "org.mockito"       %  "mockito-core" % "2.23.0" % "test",
+  "org.mockito"       %  "mockito-core" % "1.10.19" % "test",
   "org.scalactic"     %% "scalactic"    % "3.0.5",
   "org.scalatest"     %% "scalatest"    % "3.0.5" % "test"
 )
