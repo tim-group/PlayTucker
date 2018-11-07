@@ -42,7 +42,6 @@ val playTuckerCore = (project in file("modules/play-tucker-core/")).enablePlugin
 val playMetricsGraphite = (project in file("modules/play-metrics-graphite/")).enablePlugins(PlayScala)
   .settings(compileOptions)
   .settings(libraryDependencies ++= commonLibs
-                                  :+ "nl.grons"             %% "metrics-scala"    % "3.2.1"
                                   :+ "com.codahale.metrics" %  "metrics-core"     % metricsVersion
                                   :+ "com.codahale.metrics" %  "metrics-graphite" % metricsVersion
                                   :+ "com.codahale.metrics" %  "metrics-jvm"      % metricsVersion
