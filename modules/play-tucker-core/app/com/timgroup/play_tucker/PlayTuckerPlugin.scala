@@ -27,7 +27,9 @@ class PlayTuckerPlugin(application: Application, appInfo: AppInfo) extends Plugi
     override def get() = Health.State.ill
   }
   var tucker: Option[(StatusPageGenerator, ApplicationInformationHandler)] = None
-  private var startupTimer = new StartupTimer(health)
+  private var startupTimer = new StartupTimer(new Health {
+    override def get(): State = health.get()
+  })
 
   def addComponent(component: Component) = {
     tucker.foreach(_._1.addComponent(component))
