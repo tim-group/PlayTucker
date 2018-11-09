@@ -1,6 +1,6 @@
 import play.PlayImport.PlayKeys._
 
-scalaVersion in ThisBuild := "2.11.12"
+scalaVersion in ThisBuild := "2.11.5"
 
 organization in ThisBuild := "com.timgroup"
 
@@ -19,19 +19,20 @@ crossScalaVersions := Seq("2.11.5")
 
 val playVersion = play.core.PlayVersion.current // see /project/play.sbt
 val tuckerVersion = "1.0.1511"
-val metricsVersion = "4.0.3"
+val metricsVersion = "3.0.2"
 
 val appName = "play-tucker"
 val appVersion = "1.0-SNAPSHOT"
 
-lazy val compileOptions = scalacOptions ++= Seq("-deprecation", "-unchecked", "-Xfatal-warnings", "-Xlint:_,-missing-interpolator", "-feature")
+lazy val compileOptions = scalacOptions ++= Seq("-deprecation", "-Ylog-classpath", "-unchecked", "-Xfatal-warnings", "-Xlint", "-feature")
 
 lazy val commonLibs = Seq(
   "com.typesafe.play" %% "play"         % playVersion,
   "com.timgroup"      %  "Tucker"       % tuckerVersion intransitive(),
   "org.slf4j"         %  "slf4j-api"    % "[1.7.6]",
-  "org.scalactic"     %% "scalactic"    % "3.0.5",
-  "org.scalatest"     %% "scalatest"    % "3.0.5" % "test"
+  "org.mockito"       %  "mockito-core" % "1.9.0" % "test",
+  "org.scalactic"     %% "scalactic"    % "2.2.0",
+  "org.scalatest"     %% "scalatest"    % "2.2.0" % "test"
 )
 
 val playTuckerCore = (project in file("modules/play-tucker-core/")).enablePlugins(PlayScala)
@@ -41,17 +42,17 @@ val playTuckerCore = (project in file("modules/play-tucker-core/")).enablePlugin
 val playMetricsGraphite = (project in file("modules/play-metrics-graphite/")).enablePlugins(PlayScala)
   .settings(compileOptions)
   .settings(libraryDependencies ++= commonLibs
-                                  :+ "io.dropwizard.metrics" %  "metrics-core"     % metricsVersion
-                                  :+ "io.dropwizard.metrics" %  "metrics-graphite" % metricsVersion
-                                  :+ "io.dropwizard.metrics" %  "metrics-jvm"      % metricsVersion
-                                  :+ "io.dropwizard.metrics" %  "metrics-servlet"  % metricsVersion
-                                  :+ "io.dropwizard.metrics" %  "metrics-servlets" % metricsVersion)
+                                  :+ "com.codahale.metrics" %  "metrics-core"     % metricsVersion
+                                  :+ "com.codahale.metrics" %  "metrics-graphite" % metricsVersion
+                                  :+ "com.codahale.metrics" %  "metrics-jvm"      % metricsVersion
+                                  :+ "com.codahale.metrics" %  "metrics-servlet"  % metricsVersion
+                                  :+ "com.codahale.metrics" %  "metrics-servlets" % metricsVersion)
 
 val playTuckerBoneCp = (project in file("modules/play-tucker-bonecp")).enablePlugins(PlayScala)
   .settings(compileOptions)
   .settings(libraryDependencies ++= commonLibs
                                   :+ jdbc
-                                  :+ "mysql"              %  "mysql-connector-java" % "8.0.13"
+                                  :+ "mysql"              %  "mysql-connector-java" % "5.1.27"
            )
   .dependsOn(playTuckerCore)
   .dependsOn(playMetricsGraphite)

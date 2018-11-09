@@ -1,9 +1,9 @@
 package com.timgroup.play_jvmmetrics_tucker
 
-import com.codahale.metrics.jvm._
-import com.codahale.metrics.MetricRegistry
+import com.codahale.metrics.jvm.{ThreadStatesGaugeSet, MemoryUsageGaugeSet, GarbageCollectorMetricSet}
+import com.codahale.metrics.{MetricRegistry, jvm, JvmAttributeGaugeSet}
 import com.timgroup.play_metrics_graphite.Metrics
-import play.api.{Application, Logger, Plugin}
+import play.api.{Logger, Application, Plugin}
 import com.timgroup.play_tucker.PlayTuckerPlugin
 
 
@@ -26,7 +26,7 @@ class PlayJvmMetricsTuckerPlugin(app: Application) extends Plugin {
 
   private def registerMetrics(registry: MetricRegistry) {
     registry.register("jvm", new JvmAttributeGaugeSet())
-    registry.register("jvm.fd_usage", new FileDescriptorRatioGauge())
+    registry.register("jvm.fd_usage", new jvm.FileDescriptorRatioGauge())
     registry.register("jvm.gc", new GarbageCollectorMetricSet)
     registry.register("jvm.memory", new MemoryUsageGaugeSet())
     registry.register("jvm.thread-states", new ThreadStatesGaugeSet)
