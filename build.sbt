@@ -38,15 +38,16 @@ lazy val commonLibs = Seq(
 val playTuckerCore = (project in file("modules/play-tucker-core/")).enablePlugins(PlayScala)
   .settings(compileOptions)
   .settings(libraryDependencies ++= commonLibs)
+  .settings(libraryDependencies += "io.dropwizard.metrics" %  "metrics-core"     % metricsVersion)
 
 val playMetricsGraphite = (project in file("modules/play-metrics-graphite/")).enablePlugins(PlayScala)
   .settings(compileOptions)
   .settings(libraryDependencies ++= commonLibs
-                                  :+ "com.codahale.metrics" %  "metrics-core"     % metricsVersion
-                                  :+ "com.codahale.metrics" %  "metrics-graphite" % metricsVersion
-                                  :+ "com.codahale.metrics" %  "metrics-jvm"      % metricsVersion
-                                  :+ "com.codahale.metrics" %  "metrics-servlet"  % metricsVersion
-                                  :+ "com.codahale.metrics" %  "metrics-servlets" % metricsVersion)
+                                  :+ "io.dropwizard.metrics" %  "metrics-core"     % metricsVersion
+                                  :+ "io.dropwizard.metrics" %  "metrics-graphite" % metricsVersion
+                                  :+ "io.dropwizard.metrics" %  "metrics-jvm"      % metricsVersion
+                                  :+ "io.dropwizard.metrics" %  "metrics-servlet"  % metricsVersion
+                                  :+ "io.dropwizard.metrics" %  "metrics-servlets" % metricsVersion)
 
 val playTuckerBoneCp = (project in file("modules/play-tucker-bonecp")).enablePlugins(PlayScala)
   .settings(compileOptions)
