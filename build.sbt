@@ -18,8 +18,8 @@ credentials += Credentials(new File("/etc/sbt/credentials"))
 crossScalaVersions := Seq("2.11.5")
 
 val playVersion = play.core.PlayVersion.current // see /project/play.sbt
-val tuckerVersion = "1.0.1511"
-val metricsVersion = "3.0.2"
+val tuckerVersion = "1.0.1526"
+val metricsVersion = "3.2.0"
 
 val appName = "play-tucker"
 val appVersion = "1.0-SNAPSHOT"
