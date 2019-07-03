@@ -1,5 +1,6 @@
 package com.timgroup.play_tucker
 
+import com.codahale.metrics.MetricRegistry
 import com.timgroup.tucker.info.Health.State
 import com.timgroup.tucker.info.status.StatusPageGenerator
 import com.timgroup.tucker.info.ApplicationInformationHandler
@@ -10,8 +11,8 @@ import com.timgroup.tucker.info.component.JvmVersionComponent
 import play.api.mvc.{Action, Controller}
 import play.api.{Application, Plugin}
 import play.api.libs.concurrent.Akka
-import scala.concurrent.ExecutionContext
 
+import scala.concurrent.ExecutionContext
 import com.timgroup.play_tucker.lib.PlayWebResponse
 import com.timgroup.play_tucker.components.PlayVersionComponent
 import com.timgroup.tucker.info.StartupTimer
@@ -43,9 +44,8 @@ class PlayTuckerPlugin(application: Application, appInfo: AppInfo) extends Plugi
     val appName = appInfo.getName()
     val statusPage = new StatusPageGenerator(appName, new PlayVersionComponent(appInfo))
 
-    val handler = new ApplicationInformationHandler(statusPage, Stoppable.ALWAYS_STOPPABLE, new Health {
-      override def get(): State = health.get()
-    })
+    val handler = new ApplicationInformationHandler(statusPage, Stoppable.ALWAYS_STOPPABLE, health, new MetricRegistry())
+
     tucker = Some((statusPage, handler))
     addComponent(new JvmVersionComponent())
     startupTimer.start()
